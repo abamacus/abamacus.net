@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+xmlns:rawvoice="http://www.rawvoice.com/rawvoiceRssModule/"
+xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0"
+>
+	<channel>
+		<title>Skies of Glass Actual Play by Fear the Boot</title>
+		<atom:link href="http://ap.feartheboot.com/index.php/feed/podcast" rel="self" type="application/rss+xml" />
+		<link>http://ap.feartheboot.com</link>
+		<description>Skies of Glass Actual Play by Fear the Boot</description>
+		<lastBuildDate>Tue, 06 Apr 2021 00:00:00 +0000</lastBuildDate>
+		<language>en-US</language>
+		<sy:updatePeriod>weekly</sy:updatePeriod>
+		<sy:updateFrequency>1</sy:updateFrequency>
+		<atom:link rel="hub" href="https://pubsubhubbub.appspot.com/" />
+		<itunes:summary>Fear the Boot is a long-running podcast on tabletop role playing game culture and advice. In this spin-off show, we record ourselves playing various games, both for your entertainment and to demonstrate the concepts we describe in the primary show.</itunes:summary>
+		<itunes:author>FearTheBoot.com</itunes:author>
+		<itunes:explicit>yes</itunes:explicit>
+		<itunes:image href="http://ap.feartheboot.com/wp-content/uploads/powerpress/boot7-638.jpg" />
+		<itunes:owner>
+			<itunes:name>FearTheBoot.com</itunes:name>
+			<itunes:email>dan@feartheboot.com</itunes:email>
+		</itunes:owner>
+		<managingEditor>dan@feartheboot.com (FearTheBoot.com)</managingEditor>
+		<copyright>2021 Fear the Boot</copyright>
+		<itunes:subtitle>Recordings of RPG sessions by the hosts and friends of Fear the Boot.</itunes:subtitle>
+		<image>
+			<title>Fear the Boot, Actual Play</title>
+			<url>http://ap.feartheboot.com/wp-content/uploads/powerpress/boot7-638.jpg</url>
+			<link>http://ap.feartheboot.com</link>
+		</image>
+		<itunes:category text="Leisure">
+			<itunes:category text="Games" />
+		</itunes:category>
+		<googleplay:category text="Games &amp; Hobbies"/>
+		<itunes:category text="Leisure" />
+		<rawvoice:rating>TV-14</rawvoice:rating>
+		<rawvoice:subscribe feed="http://ap.feartheboot.com/index.php/feed/podcast" itunes="https://itunes.apple.com/us/podcast/fear-the-boot-actual-play/id1265211589" blubrry="https://www.blubrry.com/fearthebootap/" stitcher="https://www.stitcher.com/podcast/fear-the-boot-actual-play"/>
+		<item><title>Skies of Glass AP, Episode 71</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0071.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 71</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0071.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 70</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0070.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 69</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0069.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 68</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0068.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 67</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0067.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 66</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0066.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 65</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0065.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 64</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0064.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 63</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0063.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 62</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0062.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 61</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0061.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 60</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0060.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 59</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0059.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 58</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0058.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 57</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0057.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 56</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0056.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 55</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0055.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 54</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0054.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 53</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0053.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 52</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0052.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 51</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0051.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 50</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0050.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 49</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0049.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 48</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0048.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 47</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0047.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 46</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0046.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 45</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0045.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 44</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0044.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 43</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0043.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 42</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0042.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 41</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0041.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 40</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0040.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 39</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0039.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 38</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0038.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 37</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0037.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 36</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0036.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 35</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0035.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 34</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0034.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 33</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0033.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 32</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0032.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 31</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0031.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 30</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0030.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 29</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0029.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 28</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0028.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 27</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0027.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 26</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0026.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 25</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0025.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 24</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0024.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 23</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0023.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 22</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0022.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 21</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0021.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 20</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0020.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 19</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0019.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 18</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0018.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 17</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0017.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 16</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0016.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 15</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0015.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 14</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0014.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 13</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0013.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 12</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0012.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 11</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0011.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 10</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0010.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 09</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0009.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 08</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0008.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 07</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0007.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 06</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0006.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 05</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0005.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 04</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0004.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 03</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0003.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 02</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0002.mp3" /></item>
+		<item><title>Skies of Glass AP, Episode 01</title><enclosure type="audio/mpeg" url="https://traffic.libsyn.com/secure/fearthebootap/feartheboot_ap_sog_0001.mp3" /></item>
+	</channel>
+</rss>

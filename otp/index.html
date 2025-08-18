@@ -206,7 +206,7 @@ function getSelectedAlphabet() {
    // whatever the existing value is
    return byId('uiAlphabet').value;
   default:
-   return 'Logic error - unexepcted value "' + selectedOptionValue + '" in selectAlphabet.';
+   return 'Logic error - unexpected value "' + selectedOptionValue + '" in selectAlphabet.';
  }
 }
 function selectAlphabet() {
@@ -450,7 +450,7 @@ window.addEventListener('load', initialize);
  <br/>
  <input id="uiInputFile" type="file" />
  <br/>
- <textarea id="uiInput" rows="10" cols="50">This is an example input message.
+ <textarea aria-label="Input" id="uiInput" rows="10" cols="50">This is an example input message.
 To demonstrate / test:
 1) click Generate Key
 2) copy the Output text
@@ -463,7 +463,7 @@ To demonstrate / test:
  <span id="uiAlphabetSize"></span> characters
  <br/>
  <button id="uiSortAlphabet" type="button">Sort</button>
- <select id="uiAlphabetSet">
+ <select aria-label="Alphabet Set" id="uiAlphabetSet">
   <option value="26">Classic (26 letters)</option>
   <option value="96">Keyboard (base 96)</option>
   <option value="64">MIME (base 64)</option>
@@ -472,12 +472,12 @@ To demonstrate / test:
   <option value="">Custom</option>
  </select>
  <br/>
- <textarea id="uiAlphabet" rows="10" cols="50"></textarea>
+ <textarea aria-label="Alphabet" id="uiAlphabet" rows="10" cols="50"></textarea>
 </div>
 
 <div class="majorDiv" id="divKey">
  <div class="hoverable help"><div>
-   - The Key should be a perfectly random distribution of all of the characters in the "Alphabet".
+   - The Key should be a perfectly random distribution of all the characters in the "Alphabet".
    <br/>
    - The Key must be at least as long as the input message.
    <br/>
@@ -490,7 +490,7 @@ To demonstrate / test:
  <br/>
  <input id="uiKeyFile" type="file" />
  <br/>
- <textarea id="uiKey" rows="10" cols="50">
+ <textarea aria-label="Key" id="uiKey" rows="10" cols="50">
 ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
 This is not a secure key.
 ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
@@ -506,7 +506,7 @@ This is not a secure key.
  <br/>
  <button id="uiDownloadOutput" type="button">Save As</button>
  <br/>
- <textarea id="uiOutput" rows="10" cols="50" readonly="readonly"></textarea>
+ <textarea aria-label="Output" id="uiOutput" rows="10" cols="50" readonly="readonly"></textarea>
 </div>
 
   <span style="display: block; clear: both;"></span>
@@ -532,7 +532,7 @@ This is not a secure key.
     <a href="https://www.cryptomuseum.com/crypto/otp/index.htm">cryptomuseum.com</a>
   </p>
   <p>
-    The simple web site here is a demonstration of the One-Time Pad.
+    The simple website here is a demonstration of the One-Time Pad.
     It is a fully functional model for encrypting/decrypting,
     but does not have/use a good random number generator,
     which is a critical part of using a One-Time Pad.
@@ -576,7 +576,7 @@ This is not a secure key.
   
   <h2>Credits</h2>
 
-  <p> Written in October, 2015 by abamacus. (occasionally modified since then) </p>
+  <p> Written in October 2015 by abamacus. (occasionally modified since then) </p>
   <p> Thanks to: </p>
   <ul>
     <li> <a href="https://en.Wikipedia.org">Wikipedia</a>, for initial reference on the "One Time Pad" </li>
@@ -643,14 +643,14 @@ This is not a secure key.
     <li>
       The "Output" value is now a combined value, that includes the entropy of both the Input and the Key values.
       So if either is weak at some point where the other is not, that weakness will be removed.
-      Nothing you input can <em>reduce</em> the randomness of the value, only increase it (unless you somehow base your Key value on the current Input value itself; don't do that).
+      Nothing that you input can <em>reduce</em> the randomness of the value, only increase it (unless you somehow base your Key value on the current Input value itself; don't do that).
     </li>
     <li> Now copy the Output value, and pasted it back into the Input area, and input another Key value. </li>
     <li> Repeat for all remaining initial random values. </li>
     <li> Once done, put your last Output back into the Input, and click "Generate Key". This uses the low-quality random number generator in your browser to generate random values from that alphabet, of the same length as the input. The reason to always include this step, is that even if all of your communication to all websites above was fully intercepted, this pseudo-random value could not have been intercepted; and it can't make the Output any <em>less</em> random. </li>
   </ul>
   <p>
-    Now the Output value is the most-secure version of all of the input random values combined.
+    Now the Output value is the most-secure version of all the input random values combined.
     Store this value until you need it; and once you use it, destroy it!
     (if you ever use it again, it ain't "one time")
   </p>

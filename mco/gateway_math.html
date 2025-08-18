@@ -1,0 +1,80 @@
+<html lang="en">
+<body>
+<pre id="pre_text"></pre>
+</body>
+<script>
+
+// global variable, of all "gateways" to check
+EndGateways = [
+// center point, radius=2000
+{x:0,z:0,r:2000},
+// the four I placed, which _were_ as close as possible before last change
+{x:2500,z:0,r:500},
+{x:-2500,z:0,r:500},
+{x:0,z:2500,r:500},
+{x:0,z:-2500,r:500},
+// gateway 71 from Aidan, which overlaps some areas of center and of my east one
+{x:2068,z:340,r:500}
+];
+
+WriteMessage = function(message){
+ console.log(message);
+ document.getElementById('pre_text').innerText += message + '\n';
+}
+
+GatewaysOverlappingPoint = function(x,z){
+  var overlappingGateways = [];
+  EndGateways.forEach((gateway) => {
+    // h = (x^2 + y^2)^(1/2)
+    if (gateway.r > Math.pow(
+            Math.pow((x - gateway.x),2) + Math.pow((z - gateway.z),2)
+        , 0.5))
+      overlappingGateways.push(gateway);
+  });
+  return overlappingGateways;
+}
+TestLocation = function(x,z){
+  WriteMessage('Testing location: ' + x + ',' + z);
+  gateways = GatewaysOverlappingPoint(x,z);
+  WriteMessage('  Found ' + gateways.length + ' matching gateways:');
+  gateways.forEach((gateway) => {
+    WriteMessage('  ' + JSON.stringify(gateway));
+  });
+}
+TestAndWriteMessages = function(){
+  WriteMessage('Testing POC, using only these gateway coordinates');
+  WriteMessage('(bc I didnt know where to get the full list from and lazy)');
+  EndGateways.forEach((gateway) => {WriteMessage('  '+JSON.stringify(gateway))});
+  WriteMessage('');
+  WriteMessage('All points near 2000,0 are inside gateway 71.');
+  WriteMessage('The precise point of 2000,0 should not be in any other gateway circle,');
+  WriteMessage(' but any fraction to its side should be.');
+  WriteMessage('');
+  TestLocation(2000,0);
+  TestLocation(2000-0.1,0);
+  TestLocation(2000+0.1,0);
+  WriteMessage('');
+  WriteMessage('Similarly, but on the west, where there are no separate close circles.');
+  WriteMessage('');
+  TestLocation(-2000,0);
+  TestLocation(-2000-0.1,0);
+  TestLocation(-2000+0.1,0);
+  WriteMessage('');
+  WriteMessage('Now at 1m off, to mitigate a single "rounding" issue, showing that');
+  WriteMessage(' you should only need to move 32m to be outside of the existing 500m circle,');
+  WriteMessage(' or 64m to be outside of the central 2000m circle.');
+  WriteMessage('');
+  TestLocation(-2000-1,32);
+  TestLocation(-2000+1,64);
+  TestLocation(-2000-1,-32);
+  TestLocation(-2000+1,-64);
+  WriteMessage('');
+  WriteMessage('This is the method used to calculate the distance:');
+  WriteMessage(GatewaysOverlappingPoint);
+
+}
+// To account for some odd "rounding",
+// use the +1 and -1 and see how far until it is not
+TestAndWriteMessages();
+</script>
+</html>

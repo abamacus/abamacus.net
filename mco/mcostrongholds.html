@@ -1,0 +1,379 @@
+<html lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>MCO Strongholds - work in progress</title>
+</head>
+<body>
+<canvas height="1200" width="1200"></canvas>
+</body>
+<script>
+// per https://minecraft.fandom.com/wiki/Stronghold:
+//  The first ring has 3 strongholds within 1,280-2,816 blocks of the origin.
+//  The second ring has 6 strongholds within 4,352-5,888 blocks of the origin.
+//  The third ring has 10 strongholds within 7,424-8,960 blocks of the origin.
+//  The fourth ring has 15 strongholds within 10,496-12,032 blocks of the origin.
+//  The fifth ring has 21 strongholds within 13,568-15,104 blocks of the origin.
+//  The sixth ring has 28 strongholds within 16,640-18,176 blocks of the origin.
+//  The seventh ring has 36 strongholds within 19,712-21,248 blocks of the origin.
+//  The eighth and outermost ring has 9 strongholds within 22,784-24,320 blocks of the origin.
+var rings = [
+ {count: 3, minDistance: 1280, maxDistance: 2816, theta: Math.PI*2/ 3, points:[]},
+ {count: 6, minDistance: 4352, maxDistance: 5888, theta: Math.PI*2/ 6, points:[]},
+ {count:10, minDistance: 7424, maxDistance: 8960, theta: Math.PI*2/10, points:[]},
+ {count:15, minDistance:10496, maxDistance:12032, theta: Math.PI*2/15, points:[]},
+ {count:21, minDistance:13568, maxDistance:15104, theta: Math.PI*2/21, points:[]},
+ {count:28, minDistance:16640, maxDistance:18176, theta: Math.PI*2/28, points:[]},
+ {count:36, minDistance:19712, maxDistance:21248, theta: Math.PI*2/36, points:[]},
+ {count: 9, minDistance:22784, maxDistance:24320, theta: Math.PI*2/ 9, points:[]}
+];
+
+function locateStrongholds(coords) {
+ // locateStrongholds() will use all input points to determine the locations of other Strongholds in the same ring.
+ // input coords is an array of [x,z] values like [[2000,2],[3,5000]]
+
+ // note: in this function we label coordinates as [x,y] for convenience;
+ //       the equivalent Minecraft "z" coordinate is the negative of this "y" coordinate
+
+ // first, put each coordinate into the correct ring
+ // along with theta, and the distance (for debugging; not actually used)
+ for (var i = 0; i < coords.length; i++){
+  var x = coords[i][0];
+  var y = coords[i][1];
+
+  // calculate distance from 0,0
+  var distance = Math.sqrt(x*x+y*y);
+  // calculate theta (angle in radians) from zero (positive axis)
+  var theta = Math.atan2(y,x);
+  if (theta < 0) theta = theta + Math.PI * 2;
+
+  var ring = getRing(distance, rings);
+  if (ring == null){
+   console.log('Point <' + x + ',' + y + '> is not in any ring; distance from <0,0> is ' + Math.floor(distance).toString());
+  } else {
+   ring.points.push([x,y,theta,distance]);
+  }
+ }
+
+ // for each ring:
+ // calculate the average thetaOffset for the whole ring
+ for (var i = 0; i < rings.length; i++){
+  var ring = rings[i];
+  if (ring.points.length == 0){
+   // if zero known locations - remove>
+   // rings.splice(i--, 1);
+  } else {
+   var ringTheta = ring.theta;
+   var averageDistance = (ring.minDistance + ring.maxDistance) / 2;
+   console.log(calculateAverageThetaOffset(ring));
+   ring.thetaOffset = calculateAverageThetaOffset(ring);
+   // now we can loop through all *expected* ring locations,
+   // and when no existing match is present output that location
+   var o = ring.thetaOffset;
+   while (o < Math.PI * 2){
+    // first check for an existing point within ring.Theta/2
+    var alreadyExists = false;
+    for (var j = 0; j < ring.points.length; j++){
+     var thisTheta = ring.points[j][2];
+     if (thisTheta >= o - ringTheta/2 && thisTheta <= o + ringTheta/2)
+      alreadyExists = true;
+    }
+    if (!alreadyExists | true){
+     var x = Math.floor(Math.cos(o) * averageDistance);
+     var y = Math.floor(Math.sin(o) * averageDistance);
+     console.log('Stronghold should generate at approximately: <' + x + ',' + y + '>');
+    }
+    o += ringTheta;
+   }
+
+  }
+ }
+}
+function getRing(distance, rings) {
+ var tolerance = 20; // allow up to this amount of inaccuracy in the input coordinates before calling it an error
+
+ for (var i = 0; i < rings.length; i++){
+  var ring = rings[i];
+  if (distance >= ring.minDistance - tolerance
+      & distance <= ring.maxDistance + tolerance)
+   return ring;
+ }
+ return null;
+}
+function calculateAverageThetaOffset(ring) {
+ var ringTheta = ring.theta; // this is the angle between strongholds for this ring
+ // using the first point to check if near-zero; if yes, add 1/2 of ringTheta to all points, and subtract it after averaging.
+ // check if in the bottom or top 20% of possible values
+ var nearZero = (ring.points[2] < ringTheta/5 || ring.points[2] < ringTheta - ringTheta/5);
+ if (nearZero) {
+   console.log('TODO: verify nearZero works like you think it does');
+ }
+
+ var sumTheta = 0;
+ var numTheta = 0;
+ for (var i = 0; i < ring.points.length; i++){
+  var thisTheta = ring.points[i][2];
+  if (nearZero)
+   thisTheta += ringTheta/2;
+  while (thisTheta > ringTheta)
+   thisTheta -= ringTheta;
+  sumTheta += thisTheta;
+  numTheta += 1;
+ }
+ var averageTheta = sumTheta / numTheta;
+
+ if (nearZero)
+  averageTheta -= ringTheta/2;
+
+ return averageTheta;
+}
+// test call
+locateStrongholds([
+ [  22151,  6982],
+ [  12656, 19862],
+ [  -3073, 23350],
+ [ -17363, 15913],
+ [ -23530,  1029],
+ [ -18687,-14336],
+ [  -5100,-22994],
+ [  10873,-20892],
+ [  21758, -9015]
+ ]);
+
+      function drawStrongholds() {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        var ctx = canvas.getContext("2d");
+        // scale to be small enough to hold the world border *after* we expand to hold the largest ring, and center at nexus
+        var maxRadius = 26400;
+        // for map scale, zoom in
+        //maxRadius *= 0.5;
+        ctx.setTransform(
+          canvas.width / maxRadius / 2,
+          0,
+          0,
+          canvas.height / maxRadius / 2,
+          canvas.width / 2 - (-1816 / maxRadius / 2 * canvas.width), // Nexus X is -1816
+          canvas.height / 2 - (+1711 / maxRadius / 2 * canvas.height)// Nexus Z is +1711
+        ); // xScale, xSkew, ySkew, yScale, xMove, yMove
+
+        // clear the canvas
+        ctx.clearRect(-maxRadius, -maxRadius, 2 * maxRadius, 2 * maxRadius);
+
+
+         // draw the 8 rings
+        for (var i = 0; i < rings.length; i++){
+         var ring = rings[i];
+         ctx.strokeStyle = "rgba(0,0,0,0.05)"; // faint gray line
+         ctx.beginPath();
+         var radius = (ring.maxDistance + ring.minDistance) / 2;
+         ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+         ctx.lineWidth = (ring.maxDistance - ring.minDistance) / 2;
+         ctx.stroke();
+        }
+
+        { // draw the lines for max-zoomed-out maps - squares of size 2048
+         var max = 2048 * 12;
+         var min = -2048 * 13;
+
+         ctx.beginPath();
+         ctx.strokeStyle = "rgba(0,0,0,0.25)"; // faint gray line
+         // the map-edge (when held) hides a 1 pixel border, which is 16 blocks on each side of the line
+         ctx.lineWidth = 16;
+         var xMin = 2048 * -14;
+         var yMin = 2048 * -12;
+         var fullSize = 2048 * 27;
+         var x = xMin;
+         var y = yMin;
+         for (var i = 0; i <= fullSize / 2048; i++){
+          ctx.moveTo(xMin, y);
+          ctx.lineTo(xMin + fullSize, y);
+          ctx.moveTo(x, yMin);
+          ctx.lineTo(x, yMin + fullSize);
+          x += 2048;
+          y += 2048;
+         }
+         ctx.stroke();
+        }
+
+        // To encompass the LAST stronghold, the world border needs to be
+        //  expanded by at least 4500 blocks, at most 5300 blocks.
+        var worldBorderMCO = 21000;
+        // draw the big circle (world border)
+        ctx.strokeStyle = "rgba(0,0,0,1)"; // faint gray line for the whole ring path
+        ctx.beginPath();
+        ctx.arc(-1816, 1711, worldBorderMCO, 0, 2 * Math.PI);
+        ctx.lineWidth = 50;
+        ctx.stroke();
+
+        drawIt(ctx,     0,      0,typeOther,'0,0');
+        drawIt(ctx,  -128,    358,typeOther,'Spawn');
+        drawIt(ctx, -1816,   1711,typeOther,'Nexus');
+
+        drawIt(ctx,  2727,  19969,typeEye,'');
+        drawIt(ctx,  2687,  19953,typePortal,'portal - Emerald Mall');
+
+        drawIt(ctx,  -696,  20006,typeEye,'eye (someone else already looked though)');
+
+        drawIt(ctx, -4184,  19512,typeEye,'eye (no signs of searching)');
+
+        drawIt(ctx, -7881,  19001,typeEye,'eye - admin removed? Lighterfly found');
+
+        drawIt(ctx,-11174,  17926,typeEye,'eye - mineshafts, have been explored');
+
+        drawIt(ctx,-13735,  15304,typeEye,'eye - someone dug');
+
+        drawIt(ctx,-15768,  12360,typeEye,'');
+        drawIt(ctx,-15734,  12328,typePortal,'portal - Raflamar; open access');
+
+        drawIt(ctx,-18684,   9805,typeEye,'');
+        drawIt(ctx,-18682,   9793,typePortal,'portal - claimed; no Stronghold but portal room');
+
+        drawIt(ctx,-19319,   6198,typeEye,'');
+        drawIt(ctx,-19273,   6223,typePortal,'portal - "Crimson A."');
+
+        drawIt(ctx,-20792,   2823,typeEye,'');
+        drawIt(ctx,-20814,   2840,typePortal,'portal - ADMIN PROTECTED - Excal');
+
+        drawIt(ctx,-19896,   -679,typeEye,'');
+        drawIt(ctx,-19872,   -710,typePortal,'portal - Darkerfly');
+
+        drawIt(ctx,-19544,  -4153,typeEye,'');
+        drawIt(ctx,-19541,  -4169,typePortal,'portal');
+
+        drawIt(ctx,-18934,  -7704,typeEye,'');
+        drawIt(ctx,-18937,  -7671,typePortal,'portal');
+
+        drawIt(ctx,-16871, -10503,typeEye,'');
+        drawIt(ctx,-16838, -10489,typePortal,'portal - Microcosms');
+
+        drawIt(ctx,-15479, -14135,typeEye,'');
+        drawIt(ctx,-15427, -14123,typePortal,'portal - Nofleet (not activated)');
+
+        drawIt(ctx,-12295, -15800,typeEye,'');
+        drawIt(ctx,-12312, -15809,typePortal,'portal - Teaacup');
+
+        drawIt(ctx, -9224, -17528,typeEye,'');
+        drawIt(ctx, -9236, -17557,typePortal,'portal - TheGriffinLord (cobble pyramid)');
+
+        drawIt(ctx, -6294, -19490,typeEye,'eye??');
+
+        drawIt(ctx, -2814, -20286,typeEye,'eye??');
+
+        drawIt(ctx,   751, -20467,typeEye,'eye??');
+
+        drawIt(ctx,  4294, -20025,typeEye,'eye??');
+
+        drawIt(ctx,  7706, -18975,typeEye,'eye??');
+
+        drawIt(ctx, 10884, -17349,typeEye,'eye??');
+
+        drawIt(ctx, 13731, -15195,typeEye,'eye??');
+
+        drawIt(ctx, 16161, -12580,typeEye,'eye??');
+
+        drawIt(ctx, 18100,  -9583,typeEye,'eye??');
+
+        drawIt(ctx, 19489,  -6294,typeEye,'eye??');
+
+        drawIt(ctx, 16197,  -7047,typeEye,'eye');
+
+        drawIt(ctx, 20285,  -2814,typeEye,'eye??');
+
+        drawIt(ctx, 20466,    751,typeEye,'eye??');
+        drawIt(ctx, 20024,   4294,typeEye,'eye??');
+        drawIt(ctx, 18974,   7706,typeEye,'eye??');
+        drawIt(ctx, 17348,  10884,typeEye,'eye??');
+        drawIt(ctx, 14983,  13623,typeEye,'eye');
+        drawIt(ctx, 14961,  13597,typePortal,'Selimbits');
+        drawIt(ctx, 12167,  15927,typeEye,'eye');
+        drawIt(ctx, 12151,  15896,typePortal,'r9qs');
+        drawIt(ctx,  9448,  18262,typeEye,'eye');
+        drawIt(ctx,  9479,  18230,typePortal,'PaladinHeihachi (unlit)');
+        drawIt(ctx,  6423,  20056,typeEye,'eye');
+        drawIt(ctx,  6419,  20028,typePortal,'DanThePilot33');
+        drawIt(ctx,  4760, -17303,typeEye,'eye');
+        drawIt(ctx, 11399, -13048,typeEye,'eye');
+        drawIt(ctx, 14055, -10232,typeEye,'eye NO STRONGHOLD (crimson)');
+        drawIt(ctx,    616,-19200,typeOther,'Ocean Monument');
+        drawIt(ctx,   4361,-18006,typeOther,'Flower Forest - neighbors on south side');
+        drawIt(ctx,  12451, 16509,typeOther,'Flower Forest');
+        drawIt(ctx, -17190, -4500,typeOther,'~portal George_Mann');
+
+        // drawIt(ctx,  -9624, 21267,typeVillage,'');
+        // drawIt(ctx,  -2182, 22748,typeVillage,'');
+        // drawIt(ctx,   -862, 22769,typeVillage,'');
+        // drawIt(ctx,   7275, 20737,typeVillage,'');
+        // drawIt(ctx,  12433, 17166,typeVillage,'');
+        // drawIt(ctx,  16606, 11900,typeVillage,'');
+        // drawIt(ctx,  19220,   315,typeVillage,'');
+        // drawIt(ctx,  18815, -2345,typeVillage,'');
+        // drawIt(ctx,  12140,-14015,typeVillage,'');
+        // drawIt(ctx,  11116,-14815,typeVillage,'');
+        // drawIt(ctx,   5165,-18226,typeVillage,'');
+        // drawIt(ctx,   4716,-18231,typeVillage,'');
+        // drawIt(ctx, -16685,-13070,typeVillage,'');
+        // drawIt(ctx, -20442, -8177,typeVillage,'');
+        // drawIt(ctx, -20961, -6383,typeVillage,'');
+        // drawIt(ctx, -22204,  5892,typeVillage,'');
+        // drawIt(ctx, -18826, 14082,typeVillage,'');
+
+        drawIt(ctx, -22151, 6872,typeEye,'eye');
+        drawIt(ctx, -22177, 6816,typePortal,'2b2tisFull');
+
+        drawIt(ctx,  12656, 19862,typeEye,'?eye?');
+        drawIt(ctx,  -3073, 23350,typeEye,'?eye?');
+        drawIt(ctx, -17363, 15913,typeEye,'?eye?');
+        drawIt(ctx, -23530,  1029,typeEye,'?eye?');
+        drawIt(ctx, -18687,-14336,typeEye,'?eye?');
+        drawIt(ctx,  -5100,-22994,typeEye,'?eye?');
+        drawIt(ctx,  10873,-20892,typeEye,'?eye?');
+        drawIt(ctx,  21758, -9015,typeEye,'?eye?');
+
+
+      } // end of function drawStrongholds()
+
+var typeEye = 1;
+var typePortal = 2;
+var typeVillage = 4;
+var typeOther = 5;
+
+function drawIt(ctx,x,y,type,description) {
+ switch (type){
+  case typeEye:    ctx.fillStyle = "rgba(000,255,000,0.75)"; break;
+  case typePortal: ctx.fillStyle = "rgba(255,255,000,0.75)"; break;
+  case typeVillage:ctx.fillStyle = "rgba(192,128,064,0.75)"; break;
+  case typeOther:  ctx.fillStyle = "rgba(000,000,255,0.75)"; break;
+  default:         ctx.fillStyle = "rgba(000,000,000,0.75)"; break;
+ }
+ if (type == typeEye | type == typePortal) {
+  ctx.drawImage(stongholdEye, x-250, y-250, 500, 500)
+ } else {
+  ctx.beginPath();
+  ctx.arc(x, y, 100, 0, 2 * Math.PI);
+  //ctx.lineWidth = 300;
+  ctx.fill();
+  // black point in center
+  //ctx.fillStyle = "rgba(0,0,0,1)";
+  ctx.beginPath();
+  ctx.arc(x, y, 25, 0, 2 * Math.PI);
+  //ctx.lineWidth = 20;
+  ctx.fill();
+ }
+
+ ctx.font = "400pt Verdana";
+ ctx.fillStyle = "rgba(0,0,0,1)";
+ var xOffset = 0;
+ var yOffset = 0;
+ switch (type){
+  case typeEye:    xOffset= 200; break;
+  case typePortal: yOffset= 500; break;
+  case typeVillage:break;
+  case typeOther:  xOffset= 200;yOffset= 200; break;
+ }
+ ctx.fillText(description,x+xOffset,y+yOffset);
+}
+      var stongholdEye = new Image();
+      stongholdEye.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuNWRHWFIAAAGASURBVDhPjZE/SEJRFMbbWxqDlnBoqCEIbAj6g1EINUQUEgZSBC8oRTGjv4uLU1NTe6I99KmlmA39EXJqj6DwZRqEudSSW7/HffR8L4jgu/Ddc853znfPbXMEpX9iSPIATXBUOrRNOAXghfw+pN81B7GkdEHP1HS3YzJ5EgAzkRARSpvNW8HPlK20EkIPdAFq+dhXb2QbH4WfOvuKG9SqKSIVNXFdjJgEtCHRbuvttI8A0U9wgvX3LDNNAkUO0kZUMGF8fR5AROTtNWMInLteXpNRNh8fouSI3lXupbBvaGHUG/WLOeWnWC61Tdnw2rI2YWDRxQTskh5bnSXR1dcBwhcbXAmqqlwqHkAGl9zGo5kgBNRZBKTypzsQw1IyHlDLcWEJJ/hptVSrZtiSyVIi5mcV5MDvR39+XaZl7SsMS3+vlQWeZ/eImD7u5TmJhu9r/Th6A02QMwu40OPqJiKqUbJ4BMRxLz5BF3B4jbgDOGk0cHxbUrqgFezBcjVFJM83MIdKqjjvY2EAAAAASUVORK5CYII";
+      document.addEventListener("DOMContentLoaded", drawStrongholds, false);
+</script>
+</html>

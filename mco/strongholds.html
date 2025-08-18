@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Strongholds - Minecraft Xref</title>
+    <link href="style.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="script.js"></script>
+    <script>
+      function drawStronghold(ctx, radius, numberOfStrongholds) {
+        // draw the circle
+        ctx.strokeStyle = "rgba(0,0,0,0.15)"; // faint gray line for the whole ring path
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+        ctx.lineWidth = 1280;
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(0,0,0,0.5)"; // gray line for the middle of the ring
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+        ctx.lineWidth = 25;
+        ctx.stroke();
+
+        ctx.font = "bold 700pt Verdana";
+        ctx.fillStyle = "rgba(0,0,0,1)";
+        ctx.fillText(
+          numberOfStrongholds + " Strongholds at " + radius,
+          0,
+          radius + 700
+        );
+
+        // set color and size of strongholds
+        ctx.strokeStyle = "rgba(255,0,0,1)";
+        ctx.lineWidth = 200; // arbitrary value for the width of the arc
+        var width = 1200 / (radius * 2 * Math.PI); // arbitrary value for the length of the arc (adjusted proportionately to the diamater)
+        // draw each stronghold location, adjusted for randomness
+        var thetaDelta = (2 * Math.PI) / numberOfStrongholds;
+        var thetaOffset = thetaDelta * Math.random(); // random offset for starting point of each ring
+        var currentTheta = thetaOffset;
+        for (var i = 0; i < numberOfStrongholds; i++) {
+          var adjustedRadius = radius + 640 - 1280 * Math.random(); // random offset distance from 0,0 (+/- up to 640)
+          ctx.beginPath();
+          ctx.arc(0, 0, adjustedRadius, currentTheta, currentTheta + width);
+          ctx.stroke();
+          currentTheta += thetaDelta;
+        }
+      }
+      function drawMap(ctx, nether, zoom) {
+        // scale              map width  1 pixel
+        // Overworld zoom 0 =      128    1x1
+        // Overworld zoom 1 =      256    2x2
+        // Overworld zoom 2 =      512    4x4
+        // Overworld zoom 3 =     1024    8x8
+        // Overworld zoom 4 =     2048    16x16 (1 chunk)
+        // Nether    zoom 0 =     1024    8x8
+        // Nether    zoom 1 =     2048    16x16 (1 chunk)
+        // Nether    zoom 2 =     4096    32x32 (4 chunks)
+        // Nether    zoom 3 =     8192    64x64 (16 chunks)
+        // Nether    zoom 4 =    16384   128x128 (64 chunks)
+        var scale = 128 * Math.pow(2, zoom);
+        if (nether) scale *= 8;
+        ctx.beginPath();
+        if (nether) {
+          ctx.lineWidth = 50 * (zoom + 1);
+          ctx.strokeStyle = "rgba(255,0,255,0.5)"; // purple box for nether
+          ctx.rect(0, 0, -scale, -scale);
+          ctx.font = "700pt Verdana";
+          ctx.fillStyle = ctx.strokeStyle.replace("0.5", "1");
+          ctx.fillText("Nether zoom " + zoom, 0, -scale);
+        } else {
+          ctx.lineWidth = 20 * (zoom + 1);
+          ctx.strokeStyle = "rgba(0,128,0,0.5)"; // green box for overworld
+          ctx.rect(0, 0, scale, scale);
+          ctx.font = "700pt Verdana";
+          ctx.fillStyle = ctx.strokeStyle.replace("0.5", "1");
+          if (zoom == 4) ctx.fillText("Overworld zoom " + zoom, scale, scale);
+        }
+        //ctx.clearRect(-maxRadius, -maxRadius, 2*maxRadius, 2*maxRadius);
+        ctx.stroke();
+      }
+      function drawStrongholds() {
+        var canvas = document.getElementsByTagName("canvas")[0];
+        var ctx = canvas.getContext("2d");
+        // scale to be small enough to hold the largest ring, and center on canvas
+        var maxRadius = 25000;
+        // for map scale, zoom in
+        //maxRadius *= 0.5;
+        ctx.setTransform(
+          canvas.width / maxRadius / 2,
+          0,
+          0,
+          canvas.height / maxRadius / 2,
+          canvas.width / 2,
+          canvas.height / 2
+        ); // xScale, xSkew, ySkew, yScale, xMove, yMove
+
+        // clear the canvas
+        ctx.clearRect(-maxRadius, -maxRadius, 2 * maxRadius, 2 * maxRadius);
+
+        for (var i = 0; i <= 4; i++) {
+          drawMap(ctx, true, i);
+          drawMap(ctx, false, i);
+        }
+
+        drawStronghold(ctx, 2048, 3);
+        drawStronghold(ctx, 5120, 6);
+        drawStronghold(ctx, 8192, 10);
+        drawStronghold(ctx, 11264, 15);
+        drawStronghold(ctx, 14336, 21);
+        drawStronghold(ctx, 17408, 28);
+        drawStronghold(ctx, 20480, 36);
+        drawStronghold(ctx, 23552, 9);
+      }
+      document.addEventListener("DOMContentLoaded", drawStrongholds, false);
+    </script>
+  </head>
+
+  <body>
+    <div id="_sidebar" class="sidebar">
+      <script>
+        addSidebarAsync();
+      </script>
+    </div>
+
+    <ul>
+      <li>
+        This shows where and how all strongholds generate, in java edition, as
+        described at
+        <a href="https://minecraft.gamepedia.com/Stronghold"
+          >https://minecraft.gamepedia.com/Stronghold</a
+        >.
+      </li>
+      <li>
+        Three will generate near the center, and more and more in rings
+        spreading outward, for a total of 128 Strongholds.
+      </li>
+      <li>
+        For scale, the green squares are the sizes of a map, with zoom 0 to 4.
+        <ul>
+          <li>
+            If you make a fully zoomed out map, near world spawn, there is just
+            over a 50% chance of it containing a Stronghold. There is a 75%
+            chance of one being in that general quadrant, but almost a third of
+            the time it will be slightly past the edge of the map. Nevertheless,
+            using such a map can greatly assist in triangulating a Stronghold.
+          </li>
+        </ul>
+      </li>
+      <li>
+        Also shown in purple, relative Nether map scale, which is simply 8:1
+        compared to Overworld maps.
+        <ul>
+          <li>
+            So, a Nether mapped zoomed out 1 time is the same size as an
+            Overworld map zoomed out 4 times.
+          </li>
+        </ul>
+      </li>
+      <li>
+        For another relative scale, the closest Woodland Mansion generated will
+        be on average 15,000 blocks from spawn, which is about the distance of
+        the 5th ring of Strongholds.
+        <ul>
+          <li>
+            This means there are probably 40 Strongholds closer to you than a
+            Woodland Mansion is.
+          </li>
+          <li>
+            Of course, actual distance to a Woodland Mansion can vary greatly
+            depending on the seed.
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <button onclick="drawStrongholds();">Re-Randomize</button>
+    <div>
+      <canvas height="1200" width="1200"></canvas>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+/* for the other way to "start over" in CSS, see "normalize.css" -- github.com/necolas/normalize.css */
+/* RESET BEGIN */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td
+{
+  margin: 0;
+  padding: 0;
+  font-family: 'Verdana' , 'Arial' , 'Times New Roman';
+}
+table
+{
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+fieldset, img
+{
+  border: 0;
+}
+address, caption, cite, code, dfn, th, var
+{
+  font-style: normal;
+  font-weight: normal;
+}
+caption, th
+{
+  text-align: left;
+}
+h1, h2, h3, h4, h5, h6
+{
+  font-size: 100%;
+  font-weight: normal;
+}
+q:before, q:after
+{
+  content: '';
+}
+abbr, acronym
+{
+  border: 0;
+}
+ul, ol
+{
+  padding: 0 0 0 1.5em;
+}
+h1, h2, h3, h4, h5, h6
+{
+  margin: 5px 0 0 0;
+}
+pre
+{
+  white-space: pre-wrap;
+}
+/* RESET END */
+
+.tooltip { position: relative; }
+.tooltip:hover:after
+{
+  content: attr(tooltip);
+
+  position: fixed;
+  bottom: 20px; /* to leave space for Chrome's URL preview for links */
+  left: 10px;
+  z-index: 10;
+  max-width: 20em;
+  max-width: 80vw;
+  white-space: normal;
+
+  font-size: initial;
+  text-align: left;
+  color: #fff;
+  background: #333;
+  background: rgba(0,0,0,0.5);
+  padding: 5px 15px;
+
+  border-radius: 5px;
+}
+
+body
+{
+    background: #EEE; /* should always be overrode below (unless user doesn't use the server alias) */
+    font-size: 1em;
+    font-family: "Verdana", "Lucida Grande", "Helvetica Neue", Arial, Helvetica, sans-serif;
+    /* margin: 0px; */
+    padding: 0px;
+    color: #1f1f1f;
+}
+body { background: #D0F7F0; }
+/* colors for links based mostly on wikipedia's default styling */
+a:link    { color: #3070FF; text-decoration: none; }
+a:visited { color: #5773bF; }
+a:hover   { text-decoration: underline; }
+a:active  { color: #faa700; }
+
+/* HEADINGS */
+h1, h2, h3, h4, h5, h6 { color: #777777; }
+h1{font-size: 1.6em;}
+h2{font-size: 1.5em;}
+h3{font-size: 1.2em;}
+h4{font-size: 1.1em;}
+h5{font-size: 1.0em;}
+h6{font-size: 1.0em;}
+
+a > img{ border: 0; }

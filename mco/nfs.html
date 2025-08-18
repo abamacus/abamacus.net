@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+ <title>Nether Freeway System</title>
+<style>
+body{background-color: #000;color: #fff;}
+th, td {border: 1px solid #fff;}
+</style>
+ <script>
+
+// constants
+var worldCenterX   = -227; // -1816.5/8=227.0625
+var worldCenterZ   =  214; // 1711.5/8=213.9375
+var worldBorderMCO = 21000/8; // = 2625
+
+var color_pink      = 'rgba(255, 192, 203, 1.0)';
+var color_red       = 'rgba(255, 000, 000, 1.0)';
+var color_orange    = 'rgba(255, 165, 000, 1.0)';
+var color_yellow    = 'rgba(255, 255, 000, 1.0)';
+var color_lime      = 'rgba(000, 255, 000, 1.0)';
+var color_lightblue = 'rgba(173, 216, 230, 1.0)';
+var color_blue      = 'rgba(000, 000, 255, 1.0)';
+var color_purple    = 'rgba(128, 000, 128, 1.0)';
+
+function getNexusOverworld(){
+ // note: these need to be somewhat in order, with parents before child nodes, for later code to work
+ var nexusNodes = [
+  {name: 'Nexus Central'      , parentName: null           , x: - 1816.5, y:  71, z:  1711.5},
+  {name: 'Branch Pink'        , parentName: 'Nexus Central', x: - 1816.5, y:  66, z: - 388.5},
+  {name: 'Branch Red'         , parentName: 'Nexus Central', x: -  331.5, y:  66, z:   226.5},
+  {name: 'Branch Orange'      , parentName: 'Nexus Central', x:    283.5, y:  68, z:  1711.5},
+  {name: 'Branch Yellow'      , parentName: 'Nexus Central', x: -  318.5, y:  66, z:  3175  },
+  {name: 'Branch Lime'        , parentName: 'Nexus Central', x: - 1817.5, y:  66, z:  3811.5},
+  {name: 'Branch Light Blue'  , parentName: 'Nexus Central', x: - 3300.5, y:  66, z:  3196.5},
+  {name: 'Branch Blue'        , parentName: 'Nexus Central', x: - 3916.5, y:  77, z:  1711.5},
+  {name: 'Branch Purple'      , parentName: 'Nexus Central', x: - 3301.5, y:  66, z:   226.5},
+
+  {name: 'Hub Pink 1'                    , parentName: 'Branch Pink'      , x: - 3391.5, y:  81, z: -4172  },
+  {name: 'Hub Pink 2'                    , parentName: 'Branch Pink'      , x: - 1816.5, y:  72, z: -4503.5},
+  {name: 'Hub Pink 3'                    , parentName: 'Branch Pink'      , x: -  204.5, y:  65, z: -4237.5},
+  {name: 'Hub Red 1'                     , parentName: 'Branch Red'       , x:   1240.5, y:  65, z: -3587.5},
+  {name: 'Hub Red 2'                     , parentName: 'Branch Red'       , x:   2589.5, y:  65, z: -2714.5},
+  {name: 'Hub Red 3'                     , parentName: 'Branch Red'       , x:   3475.5, y:  65, z: -1357.5},
+  {name: 'Hub Orange 1'                  , parentName: 'Branch Orange'    , x:   4082.5, y:  71, z:   113.5},
+  {name: 'Hub Orange 2'                  , parentName: 'Branch Orange'    , x:   4351.5, y:  65, z:  1723.5},
+  {name: 'Hub Orange 3'                  , parentName: 'Branch Orange'    , x:   4059.5, y:  65, z:  3292.5},
+  {name: 'Hub Yellow 1'                  , parentName: 'Branch Yellow'    , x:   3453.5, y:  75, z:  4772.5},
+  {name: 'Hub Yellow 2'                  , parentName: 'Branch Yellow'    , x:   2558.5, y:  73, z:  6026.5},
+  {name: 'Hub Yellow 3'                  , parentName: 'Branch Yellow'    , x:   1256.5, y:  65, z:  7032.5},
+  {name: 'Hub Lime 1'                    , parentName: 'Branch Lime'      , x: -  239.5, y:  66, z:  7615.5},
+  {name: 'Hub Lime 2'                    , parentName: 'Branch Lime'      , x: - 1808.5, y:  72, z:  7972.5},
+  {name: 'Hub Lime 3'                    , parentName: 'Branch Lime'      , x: - 3393.5, y:  65, z:  7614  },
+  {name: 'Hub Light Blue 1'              , parentName: 'Branch Light Blue', x: - 4914.5, y:  65, z:  7014.5},
+  {name: 'Hub Light Blue 2'              , parentName: 'Branch Light Blue', x: - 6214.5, y:  65, z:  6108.5},
+  {name: 'Hub Light Blue 3'              , parentName: 'Branch Light Blue', x: - 7099.5, y:  93, z:  4772.5},
+  {name: 'Hub Blue 1'                    , parentName: 'Branch Blue'      , x: - 7734.5, y:  65, z:  3273.5},
+  {name: 'Hub Blue 2'                    , parentName: 'Branch Blue'      , x: - 8030.5, y:  73, z:  1689.5},
+  {name: 'Hub Blue 3'                    , parentName: 'Branch Blue'      , x: - 7706.5, y:  79, z:   143.5},
+  {name: 'Hub Purple 1'                  , parentName: 'Branch Purple'    , x: - 7102.5, y:  65, z: -1351  },
+  {name: 'Hub Purple 2'                  , parentName: 'Branch Purple'    , x: - 6289.5, y:  70, z: -2803.5},
+  {name: 'Hub Purple 3'                  , parentName: 'Branch Purple'    , x: - 4900.5, y:  72, z: -3542.5},
+
+  {name: 'Borderlands Hub Pink 1'        , parentName: 'Hub Pink 1'       , x: - 6475.5, y:  66, z: -15676.5},
+  {name: 'Borderlands Hub Pink 2'        , parentName: 'Hub Pink 2'       , x: - 1817.5, y:  66, z: -16288.5},
+  {name: 'Borderlands Hub Pink 3'        , parentName: 'Hub Pink 3'       , x:   2842.5, y:  66, z: -15676.5},
+  {name: 'Borderlands Hub Red 1'         , parentName: 'Hub Red 1'        , x:   7183.5, y:  66, z: -13876.5},
+  {name: 'Borderlands Hub Red 2'         , parentName: 'Hub Red 2'        , x:  10911.5, y:  66, z: -11016.5},
+  {name: 'Borderlands Hub Red 3'         , parentName: 'Hub Red 3'        , x:  13771.5, y:  68, z: - 7288.5},
+  {name: 'Borderlands Hub Orange 1'      , parentName: 'Hub Orange 1'     , x:  15570.5, y:  66, z: - 2948.5},
+  {name: 'Borderlands Hub Orange 2'      , parentName: 'Hub Orange 2'     , x:  16184  , y:  65, z:   1712.5},
+  {name: 'Borderlands Hub Orange 3'      , parentName: 'Hub Orange 3'     , x:  15570.5, y:  71, z:   6370.5},
+  {name: 'Borderlands Hub Yellow 1'      , parentName: 'Hub Yellow 1'     , x:  13771.5, y:  66, z:  10711.5},
+  {name: 'Borderlands Hub Yellow 2'      , parentName: 'Hub Yellow 2'     , x:  10911.5, y:  64, z:  14439.5},
+  {name: 'Borderlands Hub Yellow 3'      , parentName: 'Hub Yellow 3'     , x:   7183.5, y:  62, z:  17298.5},
+  {name: 'Borderlands Hub Lime 1'        , parentName: 'Hub Lime 1'       , x:   2842.5, y:  71, z:  19097.5},
+  {name: 'Borderlands Hub Lime 2'        , parentName: 'Hub Lime 2'       , x: - 1816.5, y:  71, z:  19711.5},
+  {name: 'Borderlands Hub Lime 3'        , parentName: 'Hub Lime 3'       , x: - 6474.5, y:  66, z:  19097.5},
+  {name: 'Borderlands Hub Light Blue 1'  , parentName: 'Hub Light Blue 1' , x: -10817.5, y:  64, z:  17299.5},
+  {name: 'Borderlands Hub Light Blue 2'  , parentName: 'Hub Light Blue 2' , x: -14545.5, y:  69, z:  14439.5},
+  {name: 'Borderlands Hub Light Blue 3'  , parentName: 'Hub Light Blue 3' , x: -17403.5, y:  72, z:  10711.5},
+  {name: 'Borderlands Hub Blue 1'        , parentName: 'Hub Blue 1'       , x: -19203.5, y:  66, z:   6370.5},
+  {name: 'Borderlands Hub Blue 2'        , parentName: 'Hub Blue 2'       , x: -19817.5, y:  78, z:   1712.5},
+  {name: 'Borderlands Hub Blue 3'        , parentName: 'Hub Blue 3'       , x: -19203.5, y:  65, z: - 2946.5},
+  {name: 'Borderlands Hub Purple 1'      , parentName: 'Hub Purple 1'     , x: -17404.5, y:  66, z: - 7288.5},
+  {name: 'Borderlands Hub Purple 2'      , parentName: 'Hub Purple 2'     , x: -14543.5, y:  64, z: -11017.5},
+  {name: 'Borderlands Hub Purple 3'      , parentName: 'Hub Purple 3'     , x: -10815.5, y:  63, z: -13877.5},
+
+  {name: 'BearTown'                      , parentName: 'Hub Pink 1'       , x: - 2595.5, y:  64, z: -  701.5},
+  {name: 'Georgetown'                    , parentName: 'Hub Pink 1'       , x: - 2380  , y:  70, z: - 2797  },
+  {name: 'Phoenix Isles'                 , parentName: 'Hub Pink 1'       , x: - 4578.5, y:  65, z: -11447.5},
+//{name: ''                              , parentName: 'Hub Pink 1'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 1'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 1'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 1'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 1'       , x:         , y:    , z:         },
+
+  {name: 'San Freedonia'                 , parentName: 'Hub Pink 2'       , x: -  207.5, y:  67, z: - 9071.5},
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 2'       , x:         , y:    , z:         },
+
+  {name: 'Modos'                         , parentName: 'Hub Pink 3'       , x:   2967.5, y:  65, z: -10435.5},
+  {name: 'North Of Nowhere'              , parentName: 'Hub Pink 3'       , x:    932.5, y:  44, z: -15400.5},
+//{name: ''                              , parentName: 'Hub Pink 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Pink 3'       , x:         , y:    , z:         },
+
+  {name: 'OvisAries'                     , parentName: 'Hub Red 1'        , x:   2813.5, y:  67, z: - 5807.5},
+  {name: 'StromIsle'                     , parentName: 'Hub Red 1'        , x:    621.5, y:  58, z: - 1767.5},
+//{name: ''                              , parentName: 'Hub Red 1'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 1'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 1'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 1'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 1'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 1'        , x:         , y:    , z:         },
+
+  {name: 'Batugus'                       , parentName: 'Hub Red 2'        , x:    283  , y: 161, z: -  395  },
+  {name: 'Glastle'                       , parentName: 'Hub Red 2'        , x:   9014.5, y:  71, z: - 7431.5},
+//{name: ''                              , parentName: 'Hub Red 2'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 2'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 2'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 2'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 2'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 2'        , x:         , y:    , z:         },
+
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Red 3'        , x:         , y:    , z:         },
+
+  {name: 'Lavatown'                      , parentName: 'Hub Orange 1'     , x:   3427.5, y: 109, z:    184  },
+  {name: 'Monkokoro'                     , parentName: 'Hub Orange 1'     , x:   8100  , y:  70, z: - 2172  },
+  {name: 'Newcuntington'                 , parentName: 'Hub Orange 1'     , x:  11538.5, y:  63, z:    158.5},
+//{name: ''                              , parentName: 'Hub Orange 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 1'     , x:         , y:    , z:         },
+
+  {name: 'BillionPenny Tower'            , parentName: 'Hub Orange 2'     , x:   4142.5, y:  74, z:   2164.5},
+  {name: 'Kurai Cho'                     , parentName: 'Hub Orange 2'     , x:   2874.5, y:  64, z:   2199.5},
+  {name: 'Sand Island'                   , parentName: 'Hub Orange 2'     , x:   1826.5, y:  63, z:   1166  },
+  {name: 'Town Of Life'                  , parentName: 'Hub Orange 2'     , x:   6873.5, y:  73, z:   2681.5},
+//{name: ''                              , parentName: 'Hub Orange 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 2'     , x:         , y:    , z:         },
+
+  {name: 'Banhammer Island'              , parentName: 'Hub Orange 3'     , x:   7729  , y:  64, z:   3352  },
+  {name: 'WaterShire'                    , parentName: 'Hub Orange 3'     , x:    308.5, y:  68, z:   2090.5},
+//{name: ''                              , parentName: 'Hub Orange 3'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 3'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 3'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 3'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 3'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Orange 3'     , x:         , y:    , z:         },
+
+  {name: 'Freedoninsk'                   , parentName: 'Hub Yellow 1'     , x:   9405.5, y:  32, z:   7717.5},
+  {name: 'Green Acres'                   , parentName: 'Hub Yellow 1'     , x:   8419.5, y:  70, z:   6402.5},
+  {name: 'Oasis Kingdom'                 , parentName: 'Hub Yellow 1'     , x:   9335.5, y:  68, z:   8502.5},
+  {name: 'Pietoria'                      , parentName: 'Hub Yellow 1'     , x:   7941.5, y:  72, z:   7439.5},
+  {name: 'Silver Lake'                   , parentName: 'Hub Yellow 1'     , x:   8432.5, y:  63, z:   7889.5},
+//{name: ''                              , parentName: 'Hub Yellow 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 1'     , x:         , y:    , z:         },
+
+  {name: 'Crown\'s Landing'              , parentName: 'Hub Yellow 2'     , x:   6164  , y:  73, z:  10538  },
+  {name: 'Forestberg'                    , parentName: 'Hub Yellow 2'     , x:   2226.5, y:  66, z:   5260.5},
+  {name: 'Skyline'                       , parentName: 'Hub Yellow 2'     , x:   3271  , y:  95, z:   5998  },
+//{name: ''                              , parentName: 'Hub Yellow 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 2'     , x:         , y:    , z:         },
+
+  {name: 'De\'s Town of Explaininess'    , parentName: 'Hub Yellow 3'     , x:   4739.5, y:  63, z:   8138.5},
+  {name: 'Gran Syre'                     , parentName: 'Hub Yellow 3'     , x:   2762.5, y: 106, z:  14133.5},
+  {name: 'Milva'                         , parentName: 'Hub Yellow 3'     , x:   3977.5, y:  65, z:  12910.5},
+  {name: 'Sand City'                     , parentName: 'Hub Yellow 3'     , x:   3329.5, y:  69, z:  13754.5},
+  {name: 'Sandy Bottom'                  , parentName: 'Hub Yellow 3'     , x:   3450.5, y:  65, z:   9902.5},
+  {name: 'Xandronia'                     , parentName: 'Hub Yellow 3'     , x:    270  , y:  65, z:   5396  },
+//{name: ''                              , parentName: 'Hub Yellow 3'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Yellow 3'     , x:         , y:    , z:         },
+
+  {name: 'Automata'                      , parentName: 'Hub Lime 1'       , x:   1320.5, y:  63, z:  12305.5},
+  {name: 'Cosmic City'                   , parentName: 'Hub Lime 1'       , x: - 1149.5, y:  68, z:   4079.5},
+  {name: 'Emerald Mall'                  , parentName: 'Hub Lime 1'       , x:   2687.5, y:  70, z:  19953.5},
+  {name: 'Glenfiddich'                   , parentName: 'Hub Lime 1'       , x:    148.5, y:  71, z:   2748.5},
+  {name: 'New Wood'                      , parentName: 'Hub Lime 1'       , x: -  236.5, y:  65, z:   6381.5},
+  {name: 'Pallet Town'                   , parentName: 'Hub Lime 1'       , x: - 3259.5, y:  77, z:  11907  },
+//{name: ''                              , parentName: 'Hub Lime 1'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Lime 1'       , x:         , y:    , z:         },
+
+  {name: 'Dragon River Peak City'        , parentName: 'Hub Lime 2'       , x:    872  , y:  74, z:  16814  },
+  {name: 'Eclipse Complex at Mount Nyan' , parentName: 'Hub Lime 2'       , x: - 2093.5, y:  70, z:  13086.5},
+  {name: 'Ellandria'                     , parentName: 'Hub Lime 2'       , x: - 3697  , y:  63, z:  18720.5},
+  {name: 'New Dublin'                    , parentName: 'Hub Lime 2'       , x: -  357.5, y:  75, z:  10892.5},
+  {name: 'New Louisville'                , parentName: 'Hub Lime 2'       , x: - 3446  , y:  55, z:  17108  },
+  {name: 'NHCity'                        , parentName: 'Hub Lime 2'       , x: - 3066.5, y:  64, z:  16420.5},
+  {name: 'NovaTown and Red Steam'        , parentName: 'Hub Lime 2'       , x: - 2657.5, y:  89, z:  15689.5},
+  {name: 'South FRS Station'             , parentName: 'Hub Lime 2'       , x: - 81.5  , y: 106, z:  10456.5},
+
+  {name: 'Acacia Glade'                  , parentName: 'Hub Lime 3'       , x: - 3671.5, y:  66, z:  12753.5},
+  {name: 'Acacia Roads'                  , parentName: 'Hub Lime 3'       , x: - 5105.5, y:  61, z:  11402.5},
+  {name: 'Drocata Swamp'                 , parentName: 'Hub Lime 3'       , x: - 5974  , y:  66, z:  13814  },
+  {name: 'FRS Southhub'                  , parentName: 'Hub Lime 3'       , x: - 3450  , y:  63, z:  17966  },
+  {name: 'New Eden'                      , parentName: 'Hub Lime 3'       , x: - 6303.5, y:  67, z:  12945.5},
+  {name: 'Takadokia'                     , parentName: 'Hub Lime 3'       , x: - 4475  , y:  65, z:   9194  },
+  {name: 'Verico'                        , parentName: 'Hub Lime 3'       , x: - 3393.5, y:  79, z:  10127.5},
+//{name: ''                              , parentName: 'Hub Lime 3'       , x:         , y:    , z:         },
+
+  {name: 'Charlietown'                   , parentName: 'Hub Light Blue 1' , x: - 7295  , y:  63, z:  11225.5},
+  {name: 'Montegaux'                     , parentName: 'Hub Light Blue 1' , x: - 8065  , y:  71, z:  16955  },
+  {name: 'Newport'                       , parentName: 'Hub Light Blue 1' , x: -10803.5, y:  39, z:  18976.5},
+  {name: 'The Nest'                      , parentName: 'Hub Light Blue 1' , x: - 9447.5, y: 163, z:  16941  },
+//{name: ''                              , parentName: 'Hub Light Blue 1' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 1' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 1' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 1' , x:         , y:    , z:         },
+
+  {name: 'Emberrest'                     , parentName: 'Hub Light Blue 2' , x: - 4925  , y:  87, z:   5387.5},
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 2' , x:         , y:    , z:         },
+
+  {name: 'Jibtopia'                      , parentName: 'Hub Light Blue 3' , x: -12146.5, y:  67, z:   7808.5},
+  {name: 'Kyzra'                         , parentName: 'Hub Light Blue 3' , x: -12606.5, y:  58, z:   7261.5},
+  {name: 'Treetown'                      , parentName: 'Hub Light Blue 3' , x: -12660  , y:  64, z:   7006  },
+  {name: 'Winterthorn'                   , parentName: 'Hub Light Blue 3' , x: - 8069.5, y:  63, z:   5103.5},
+//{name: ''                              , parentName: 'Hub Light Blue 3' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 3' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 3' , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Light Blue 3' , x:         , y:    , z:         },
+
+  {name: 'Kanal Town'                    , parentName: 'Hub Blue 2'       , x: - 9252.5, y:  73, z:   1537.5},
+  {name: 'MINE*MART'                     , parentName: 'Hub Blue 2'       , x: - 5335  , y:  64, z:   1867  },
+  {name: 'Spring City'                   , parentName: 'Hub Blue 2'       , x: -12469  , y:  58, z:   2107  },
+  {name: 'Zekrom'                        , parentName: 'Hub Blue 2'       , x: -12546.5, y: 155, z:   4339.5},
+//{name: ''                              , parentName: 'Hub Blue 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Blue 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Blue 2'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Blue 2'       , x:         , y:    , z:         },
+
+  {name: 'CoffeeTowne'                   , parentName: 'Hub Blue 3'       , x: -12019.5, y:  64, z: -  746.5},
+  {name: 'DiamondMall'                   , parentName: 'Hub Blue 3'       , x: - 3821.5, y:  69, z:   1591.5},
+  {name: 'Maywell Village'               , parentName: 'Hub Blue 3'       , x: -10787.5, y:  71, z:   1026  },
+  {name: 'Quarryton'                     , parentName: 'Hub Blue 3'       , x: - 7159.5, y:  52, z: -  564.5},
+  {name: 'Saikyo'                        , parentName: 'Hub Blue 3'       , x: -13329.5, y:  68, z: - 2964  },
+//{name: ''                              , parentName: 'Hub Blue 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Blue 3'       , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Blue 3'       , x:         , y:    , z:         },
+
+  {name: 'Iron Mall'                     , parentName: 'Hub Purple 1'     , x: -15041.5, y:  63, z: - 4647.5},
+  {name: 'Las Vereno'                    , parentName: 'Hub Purple 1'     , x: -14772.5, y:  70, z: - 3928.5},
+//{name: ''                              , parentName: 'Hub Purple 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 1'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 1'     , x:         , y:    , z:         },
+
+  {name: 'East Cliff'                    , parentName: 'Hub Purple 2'     , x: - 6557.5, y:  72, z: - 3444.5},
+  {name: 'Obernai'                       , parentName: 'Hub Purple 2'     , x: - 9699  , y:  61, z: - 4998  },
+//{name: ''                              , parentName: 'Hub Purple 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 2'     , x:         , y:    , z:         },
+//{name: ''                              , parentName: 'Hub Purple 2'     , x:         , y:    , z:         },
+
+  {name: 'BenjaminStad'                  , parentName: 'Hub Purple 3'     , x: - 3423.5, y:  65, z: -  786.5},
+  {name: 'Hedge Maze'                    , parentName: 'Hub Purple 3'     , x: - 8106.5, y:  67, z: -10707.5},
+  {name: 'New Snak City'                 , parentName: 'Hub Purple 3'     , x: - 7289.5, y:  67, z: - 7774.5},
+  {name: 'Shireford'                     , parentName: 'Hub Purple 3'     , x: - 7144.5, y:  87, z: - 4787.5},
+  {name: 'Socorro'                       , parentName: 'Hub Purple 3'     , x: - 6021  , y:  64, z: -13306  },
+  {name: 'townbuildthing'                , parentName: 'Hub Purple 3'     , x: - 4379.5, y:  95, z: - 8853.5},
+  {name: 'SnakyTown'                     , parentName: 'Hub Purple 3'     , x: - 9240.5, y:  68, z: -13447.5}
+//{name: ''                              , parentName: 'Hub Purple 3'     , x:         , y:    , z:         },
+ ]
+ // associate as children of parents,
+ // and calculate angle
+ for (var i = 0; i < nexusNodes.length; i++){
+  var nexusNode = nexusNodes[i];
+  nexusNode.children = [];
+  if (nexusNode.parentName == null){
+   nexusNode.radians = 0;
+   nexusNode.degrees = 0;
+  } else {
+   var parentNode = null;
+   for (var j = 0; j < nexusNodes.length; j++)
+    if (nexusNodes[j].name == nexusNode.parentName)
+     parentNode = nexusNodes[j];
+   if (parentNode == null)
+    console.log('unable to find parent node named: ' + nexusNode.parentName);
+   else
+    parentNode.children.push(nexusNode);
+
+   var getAngleRadians = function(x1,y1,x2=0,y2=0){ return Math.atan2(y2 - y1, x2 - x1); }
+   nexusNode.radians = getAngleRadians(worldCenterX,worldCenterZ,nexusNode.x,nexusNode.z);
+   nexusNode.degrees = nexusNode.radians * (180/Math.PI);
+   if (nexusNode.degrees < 0) 
+    nexusNode.degrees += 360;
+  }
+ }
+ var central = nexusNodes[0];
+ var branches = [];
+ var hubs = [];
+ var borderlandsHubs = [];
+ var destinations = [];
+
+ // for each of the 8 branches
+ for (var iBranch = 0; iBranch < central.children.length; iBranch++){
+  var branchNode = central.children[iBranch];
+  branches.push(branchNode);
+  // for each of the 3 hubs on each branch
+  for (var iHub = 0; iHub < branchNode.children.length; iHub++){
+   var hubNode = branchNode.children[iHub];
+   hubs.push(hubNode);
+   // each hub can have 1 "Borderlands Hub" and from 0 to 8 other destinations
+   for (var iEndNode = 0; iEndNode < hubNode.children.length; iEndNode++){
+    var endNode = hubNode.children[iEndNode];
+    if (iEndNode == 0)
+     borderlandsHubs.push(endNode);
+    else
+     destinations.push(endNode);
+   }
+  }
+ }
+ // return root object
+ return {
+  central: central,
+  branches: branches,
+  hubs: hubs,
+  borderlandsHubs: borderlandsHubs,
+  destinations: destinations,
+  nodes: nexusNodes
+ };
+}
+function getNFS(version){
+ // note: these need to be in order
+ var nodes = [
+  {type: 'center', color: 'white'     , x:     0, z:     0}, // in Nexus
+
+  {type: 'branch', color: 'pink'      , x:     0, z: - 263}, // in Nexus Branch
+  {type: 'fork1' , color: 'pink'      , x:     0, z: - 550}, // TODO! move/remove, was built at -227,-368 (32 nether-meters too far out)
+  {type: 'fork2' , color: 'pink'      , x:     0, z: -1592}, // -1816,-11024 is inside a building in Nahagliiv, owner Machines_Are_Us lastseen Oct'21
+  {type: 'hub1'  , color: 'pink'      , x: - 201, z: - 751}, // built (out of hub)
+  {type: 'far1'  , color: 'pink'      , x: - 582, z: -2174}, // built
+  {type: 'hub2'  , color: 'pink'      , x:     0, z: (version==2) ? (-770) : (-824)}, // in Nexus Hub
+  {type: 'far2'  , color: 'pink'      , x:     0, z: -2250}, // ?? I built one, but now I see there's another right next to it; who built it?
+  {type: 'hub3'  , color: 'pink'      , x:   201, z: - 751}, // built (out of hub)
+  {type: 'far3'  , color: 'pink'      , x:   582, z: -2174}, // built
+
+  {type: 'end1'  , color: 'gray'      , x:     0, z: -2717},
+  {type: 'end2'  , color: 'gray'      , x:  1125, z: -2717},
+
+  {type: 'branch', color: 'red'       , x:   186, z: - 186}, // in Nexus Branch
+  {type: 'fork1' , color: 'red'       , x:   389, z: - 389}, // 1296,-1400 is courtyard of the Temple of Supreme Fishiness owned by nosefish (admin)
+  {type: 'fork2' , color: 'red'       , x:  1125, z: -1125}, // built
+  {type: 'hub1'  , color: 'red'       , x:   389, z: - 674}, // built (out of hub)
+  {type: 'far1'  , color: 'red'       , x:  1125, z: -1949}, // there's an oval here, perms sign says AdoreKitten and Dark
+  {type: 'hub2'  , color: 'red'       , x:   582, z: - 582}, // in Nexus Hub
+  {type: 'far2'  , color: 'red'       , x:  1591, z: -1591}, // built; should be moved slightly, need George_Mann perms
+  {type: 'hub3'  , color: 'red'       , x:   674, z: - 389}, // "center" point is inside EnderTown/Raidersville, owner lastseen Oct'21
+  {type: 'far3'  , color: 'red'       , x:  1949, z: -1125}, // built
+
+  {type: 'end1'  , color: 'gray'      , x:  1921, z: -1921},
+  {type: 'end2'  , color: 'gray'      , x:  2717, z: -1125},
+
+  {type: 'branch', color: 'orange'    , x:   263, z:     0},
+  {type: 'fork1' , color: 'orange'    , x:   550, z:     0}, // TODO! move/remove, was built at 355,214 (32 nether-meters too far out)
+  {type: 'fork2' , color: 'orange'    , x:  1592, z:     0}, // built - had to move 20 blocks west to be outside of a home
+  {type: 'hub1'  , color: 'orange'    , x:   751, z: - 201}, // built
+  {type: 'far1'  , color: 'orange'    , x:  2173, z: - 582}, // built
+  {type: 'hub2'  , color: 'orange'    , x: (version==2) ? (770) : (824), z:     0}, // built
+  {type: 'far2'  , color: 'orange'    , x:  2250, z:     0}, // built
+  {type: 'hub3'  , color: 'orange'    , x:   751, z:   201}, // inside Townetria by ReverseDmitry; existing Nether portal almost dead center too
+  {type: 'far3'  , color: 'orange'    , x:  2173, z:   582}, // built (obby angel here)
+
+  {type: 'end1'  , color: 'gray'      , x:  2717, z:     0},
+  {type: 'end2'  , color: 'gray'      , x:  2717, z:  1125},
+
+  {type: 'branch', color: 'yellow'    , x:   186, z:   186}, // (25m off center...)
+  {type: 'fork1' , color: 'yellow'    , x:   389, z:   389}, // built
+  {type: 'fork2' , color: 'yellow'    , x:  1125, z:  1125}, // 7184 10712 built provisionally -- under cobble sponge
+  {type: 'hub1'  , color: 'yellow'    , x:   674, z:   389}, // built
+  {type: 'far1'  , color: 'yellow'    , x:  1949, z:  1125}, // "United Texas Coalition" by Txkeykeeper, feb1980, 4untochrist
+  {type: 'hub2'  , color: 'yellow'    , x:   582, z:   582}, // built
+  {type: 'far2'  , color: 'yellow'    , x:  1591, z:  1591}, // built
+  {type: 'hub3'  , color: 'yellow'    , x:   389, z:   674}, // built
+  {type: 'far3'  , color: 'yellow'    , x:  1125, z:  1949}, // 2b's hedges & snow, ask Anna
+
+  {type: 'end1'  , color: 'gray'      , x:  1921, z:  1921},
+  {type: 'end2'  , color: 'gray'      , x:  1125, z:  2717},
+
+  {type: 'branch', color: 'lime'      , x:     0, z:   263},
+  {type: 'fork1' , color: 'lime'      , x:     0, z:   550}, // TODO! move/remove, was built at -227,796 (32 nether-meters too far out)
+  {type: 'fork2' , color: 'lime'      , x:     0, z:  1592}, // built - MY monument - need to drain
+  {type: 'hub1'  , color: 'lime'      , x:   201, z:   751}, // built
+  {type: 'far1'  , color: 'lime'      , x:   582, z:  2173}, // ask George_Mann (to sign a book perhaps)
+  {type: 'hub2'  , color: 'lime'      , x:     0, z: (version==2) ? (770) : (824)}, // built, and right above "hub spot 17/8 review"
+  {type: 'far2'  , color: 'lime'      , x:     0, z:  2250}, // built; also ?inside Reno??? has portal near, talk to Ken_the_Fox
+  {type: 'hub3'  , color: 'lime'      , x: - 201, z:   751}, // built
+  {type: 'far3'  , color: 'lime'      , x: - 582, z:  2173}, // built; nearyby island belongs to SketchyPixel
+
+  {type: 'end1'  , color: 'gray'      , x:     0, z:  2717},
+  {type: 'end2'  , color: 'gray'      , x: -1125, z:  2717},
+
+  {type: 'branch', color: 'lightblue' , x: - 186, z:   186},
+  {type: 'fork1' , color: 'lightblue' , x: - 389, z:   389}, // built
+  {type: 'fork2' , color: 'lightblue' , x: -1125, z:  1125},
+  {type: 'hub1'  , color: 'lightblue' , x: - 389, z:   674}, // built
+  {type: 'far1'  , color: 'lightblue' , x: -1125, z:  1949}, // "ISLAND RESERVE FOR ADMIN USE"
+  {type: 'hub2'  , color: 'lightblue' , x: - 582, z:   582}, // inside Hub
+  {type: 'far2'  , color: 'lightblue' , x: -1591, z:  1591}, // built
+  {type: 'hub3'  , color: 'lightblue' , x: - 674, z:   389}, // built
+  {type: 'far3'  , color: 'lightblue' , x: -1949, z:  1125}, // Heruvian tank
+
+  {type: 'end1'  , color: 'gray'      , x: -1921, z:  1921},
+  {type: 'end2'  , color: 'gray'      , x: -2717, z:  1125},
+
+  {type: 'branch', color: 'blue'      , x: - 263, z:     0},
+  {type: 'fork1' , color: 'blue'      , x: - 550, z:     0},
+  {type: 'fork2' , color: 'blue'      , x: -1592, z:     0},
+  {type: 'hub1'  , color: 'blue'      , x: - 751, z:   201}, // built
+  {type: 'far1'  , color: 'blue'      , x: -2173, z:   582}, // built (nice underwater one)
+  {type: 'hub2'  , color: 'blue'      , x: (version==2) ? (-770) : (-824), z:     0}, // built
+  {type: 'far2'  , color: 'blue'      , x: -2250, z:     0}, // built (underground with lift sign)
+  {type: 'hub3'  , color: 'blue'      , x: - 751, z: - 201}, // built
+  {type: 'far3'  , color: 'blue'      , x: -2173, z: - 582}, // built - big compass star thing
+
+  {type: 'end1'  , color: 'gray'      , x: -2717, z:     0},
+  {type: 'end2'  , color: 'gray'      , x: -2717, z: -1125},
+
+  {type: 'branch', color: 'purple'    , x: - 186, z: - 186},
+  {type: 'fork1' , color: 'purple'    , x: - 389, z: - 389},
+  {type: 'fork2' , color: 'purple'    , x: -1125, z: -1125}, // -10816 47 -7288 is on Tedster Island; ask Ted1246 if can build a portal here for the NFS
+  {type: 'hub1'  , color: 'purple'    , x: - 674, z: - 389}, // TODO?
+  {type: 'far1'  , color: 'purple'    , x: -1949, z: -1125}, // TODO next to Highway?
+  {type: 'hub2'  , color: 'purple'    , x: - 582, z: - 582}, // TODO
+  {type: 'far2'  , color: 'purple'    , x: -1591, z: -1591}, // built (nice Ruined Portal one)
+  {type: 'hub3'  , color: 'purple'    , x: - 389, z: - 674}, // built
+  {type: 'far3'  , color: 'purple'    , x: -1125, z: -1949}, // "Big Evil Shears" in the way...
+
+  {type: 'end1'  , color: 'gray'      , x: -1921, z: -1921},
+  {type: 'end2'  , color: 'gray'      , x: -1125, z: -2717}
+ ]
+ for (var i = 0; i < nodes.length; i++){
+  var node = nodes[i];
+  node.x += worldCenterX;
+  node.z += worldCenterZ;
+ }
+
+ var roads = [];
+
+ // all RED and GREEN roads are either north-south/east-west, or perfectly diagonal
+ // for the BLUE roads:
+ // 1st and 3rd rings are octagons, slope ~12:5 (186/77 and 1125/467)
+ // 2nd and 4th are icositetragon (24 sided), slopes:
+ //     ~13:10 (233/179=1.302)
+ //     ~12:5 (271/112=2.419)
+ //     ~15:2 (53/7=7.571)
+ var road_distances=[
+ {color:'green'    ,distance:0,material:'Spruce'},
+ {color:'red'      ,distance:0,material:'Stone Brick'},
+ {color:'blue'     ,distance:0,material:'Red Nether Brick'},
+ {color:'purple'   ,distance:0,material:'Blackstone?'},
+ {color:'lightblue',distance:0,material:'Blue Ice'},
+ ];
+
+ var addRoad = function(node1,node2,color){
+  var distance = Math.sqrt(Math.pow(node2.x - node1.x,2)+Math.pow(node2.z - node1.z,2))
+  roads.push(
+   {
+    x1:node1.x,
+    x2:node2.x,
+    z1:node1.z,
+    z2:node2.z,
+    color: color,
+    distance: distance
+   }
+  );
+  // remove distance inside column, and add extra 10% because angles require slightly more materials
+  var modified_distance = Math.floor((distance-15)*1.1);
+  for (var ird = 0; ird < road_distances.length; ird++)
+   if (road_distances[ird].color == color)
+    road_distances[ird].distance += modified_distance;
+ }
+
+ var last_center = nodes[0];
+ var last_branch = nodes[getPrev(nodes,'branch',0)];
+ var last_fork1 = nodes[getPrev(nodes,'fork1',0)];
+ var last_fork2 = nodes[getPrev(nodes,'fork2',0)];
+ var last_hub = nodes[getPrev(nodes,'hub3',0)];
+ var last_far = nodes[getPrev(nodes,'far3',0)];
+ var last_end = nodes[getPrev(nodes,'end2',0)];
+ for (var i = 0; i < nodes.length; i++){
+  var node = nodes[i];
+  switch (node.type){
+   case 'center':
+    last_center = node;
+    break;
+   case 'fork1':
+    addRoad(last_branch, node, 'red');
+    last_fork1 = node;
+    break;
+   case 'fork2':
+    if (version == 1) addRoad(last_fork2, node, 'blue');
+    last_fork2 = node;
+    break;
+   case 'branch':
+    addRoad(last_center, node, 'red');
+    if (version == 1) addRoad(last_branch, node, 'blue');
+    last_branch = node;
+    break;
+   case 'hub1':
+   case 'hub2':
+   case 'hub3':
+    if (node.type == 'hub2'){
+     addRoad(last_fork2, node, 'red');
+     if (version == 1) addRoad(nodes[getPrev(nodes,'hub2',getPrev(nodes,'hub2',i))], node, 'green');
+    }
+    addRoad(last_fork1, node, 'red');
+    if (version == 1) addRoad(last_hub, node, 'blue');
+    last_hub = node;
+    break;
+   case 'far1':
+   case 'far2':
+   case 'far3':
+    addRoad(last_fork2, node, 'red');
+    if (version == 1) addRoad(last_far, node, 'blue');
+    if (version == 1) if (node.type == 'far1')
+     addRoad(nodes[getPrev(nodes,'hub2',i)], node, 'green');
+    if (version == 1) if (node.type == 'far3')
+     addRoad(nodes[getNext(nodes,'hub2',i)], node, 'green');
+    last_far = node;
+    break;
+   case 'end1':
+   case 'end2':
+    if (node.type == 'end1'){
+     if (version == 1) addRoad(node, nodes[getPrev(nodes,'far2',i)], 'purple');
+     // extend well past world border
+     var fauxNode = JSON.parse(JSON.stringify(node));
+     fauxNode.x = (fauxNode.x - worldCenterX) * 5 + worldCenterX;
+     fauxNode.z = (fauxNode.z - worldCenterZ) * 5 + worldCenterZ;
+     if (version == 1) addRoad(node, fauxNode, 'purple');
+    }else{
+     if (version == 1) addRoad(node, nodes[getPrev(nodes,'far3',i)], 'purple');
+     if (version == 1) addRoad(node, nodes[getNext(nodes,'far1',i)], 'purple');
+     // speculative road distance to world border. This is a very sketchy method but good enough for this purpose.
+     var xish = Math.abs(node.x) > Math.abs(node.z);
+     var fauxNode = JSON.parse(JSON.stringify(node));
+     if (xish){
+      var temp = (fauxNode.x - worldCenterX); 
+      fauxNode.x = (fauxNode.x - worldCenterX) + temp + worldCenterX;
+      fauxNode.z = (fauxNode.z - worldCenterZ) + temp + worldCenterZ;
+      if (version == 1) addRoad(node, fauxNode, 'purple');
+      fauxNode.x = (fauxNode.x - worldCenterX) + temp + worldCenterX;
+      fauxNode.z = (fauxNode.z - worldCenterZ) - temp + worldCenterZ;
+      if (version == 1) addRoad(node, fauxNode, 'purple');
+     }else{
+      var temp = (fauxNode.z - worldCenterZ); 
+      fauxNode.x = (fauxNode.x - worldCenterX) + temp + worldCenterX;
+      fauxNode.z = (fauxNode.z - worldCenterZ) + temp + worldCenterZ;
+      if (version == 1) addRoad(node, fauxNode, 'purple');
+      fauxNode.x = (fauxNode.x - worldCenterX) - temp + worldCenterX;
+      fauxNode.z = (fauxNode.z - worldCenterZ) + temp + worldCenterZ;
+      if (version == 1) addRoad(node, fauxNode, 'purple');
+     }
+
+     var fauxNode = JSON.parse(JSON.stringify(node));
+     fauxNode.x = (fauxNode.x - worldCenterX) * 5 + worldCenterX;
+     if (version == 1) addRoad(node, fauxNode, 'purple');
+
+     var fauxNode = JSON.parse(JSON.stringify(node));
+     fauxNode.z = (fauxNode.z - worldCenterZ) * 5 + worldCenterZ;
+     if (version == 1) addRoad(node, fauxNode, 'purple');
+    }
+// TODO extend both directions
+    if (version == 1) addRoad(last_end, node, 'purple');
+    last_end = node;
+    break;
+  }
+ }
+
+ return {
+  nodes: nodes,
+  roads: roads,
+  road_distances: road_distances
+ };
+}
+function drawNFS() {
+ version = Number(document.getElementById('version').value);
+ maxRadius = Number(document.getElementById('maxRadius').value);
+ scaledown = Number(document.getElementById('scaledown').value);
+
+ var canvas = document.getElementsByTagName("canvas")[0];
+ // scale to fix 1 pixel per 1 block in the Nether
+ canvas.width=maxRadius*2/scaledown;
+ canvas.height=maxRadius*2/scaledown;
+
+ var ctx = canvas.getContext("2d");
+ // scale to be small enough to hold the world border *after* we expand to hold the largest ring, and center at nexus
+ ctx.setTransform(
+   canvas.width / maxRadius / 2,
+   0,
+   0,
+   canvas.height / maxRadius / 2,
+   canvas.width / 2 - (worldCenterX / maxRadius / 2 * canvas.width) + 0.5,
+   canvas.height / 2 - (worldCenterZ / maxRadius / 2 * canvas.height) + 0.5
+ ); // xScale, xSkew, ySkew, yScale, xMove, yMove
+
+ // clear the canvas
+ ctx.clearRect(-maxRadius, -maxRadius, 2 * maxRadius, 2 * maxRadius);
+
+ // draw the big circle (world border)
+ ctx.strokeStyle = "rgba(128,128,128,0.25)"; // faint gray line for the whole ring path
+ ctx.lineWidth = 1;
+ ctx.beginPath();
+ ctx.arc(worldCenterX, worldCenterZ, worldBorderMCO, 0, 2 * Math.PI);
+
+ ctx.font = '80pt Verdana';
+ ctx.fillStyle = "rgba(128,128,128,0.25)";
+ ctx.textAlign = 'center';
+ ctx.textBaseline = 'top';
+ ctx.fillText('1.12 border',worldCenterX,worldCenterZ-worldBorderMCO);
+
+ ctx.stroke();
+ ctx.beginPath();
+ ctx.arc(worldCenterX, worldCenterZ, maxRadius, 0, 2 * Math.PI);
+ ctx.stroke();
+
+ ctx.fillText('?new border?',worldCenterX,worldCenterZ-maxRadius);
+
+//console.log(worldCenterX)
+ ctx.fillRect(worldCenterX -maxRadius,worldCenterZ -maxRadius, 2 * maxRadius, 2 * maxRadius);
+ ctx.stroke();
+
+
+ var nfs = getNFS(version);
+ var roads = nfs.roads;
+
+ drawNexusSlices(ctx);
+ if (version >= 2) zigzag(ctx,1592,3,5, (version % 1 == 0.5));
+
+ // draw roads
+ ctx.lineWidth = 5;
+ for (var i = 0; i < roads.length; i++){
+  road = roads[i];
+  ctx.strokeStyle = road.color;
+  ctx.beginPath();
+  ctx.moveTo(road.x1, road.z1);
+  ctx.lineTo(road.x2, road.z2);
+  ctx.stroke();
+ }
+
+ ctx.lineWidth = 0.5;
+
+ // draw pillars
+ var nodes = nfs.nodes;
+ for (var i = 0; i < nodes.length; i++)
+  drawPillar(ctx, nodes[i]);
+
+ // draw overworld points
+ var nexusOverworldNodes = getNexusOverworld().nodes;
+ for (var i = 0; i < nexusOverworldNodes.length; i++){
+  var label = nexusOverworldNodes[i].name;
+  if (label.startsWith('Nexus ') || label.startsWith('Branch ') || label.startsWith('Hub ') || label.startsWith('Borderlands Hub ')){
+   ctx.fillStyle = "rgba(255,255,255,1)";
+   ctx.strokeStyle = "rgba(0,0,0,1)";
+  }else{
+   ctx.fillStyle = "rgba(255,255,255,0.25)";
+   ctx.strokeStyle = "rgba(0,0,0,0.25)";
+  }
+  drawOverworldPoint(ctx, nexusOverworldNodes[i]);
+ }
+
+ drawOverworldPoint(ctx, {x:-128,z:358,name:''});
+ drawOverworldPoint(ctx, {x:0,z:0,name:''});
+
+ // add labels for all points
+
+ ctx.font = '10pt Verdana';
+ ctx.textBaseline = 'middle';
+ ctx.lineWidth = 0.5;
+ ctx.fillStyle = "rgba(255,255,255,1)";
+ ctx.strokeStyle = "rgba(0,0,0,1)";
+
+ for (var i = 0; i < nexusOverworldNodes.length; i++){
+  var label = nexusOverworldNodes[i].name;
+  if (label.startsWith('Nexus ') || label.startsWith('Branch ') || label.startsWith('Hub ') || label.startsWith('Borderlands Hub ')){
+   ctx.fillStyle = "rgba(255,255,255,1)";
+   ctx.strokeStyle = "rgba(0,0,0,1)";
+  }else{
+   ctx.fillStyle = "rgba(255,255,255,0.25)";
+   ctx.strokeStyle = "rgba(0,0,0,0.25)";
+  }
+  drawLabel(ctx,nexusOverworldNodes[i].x/8,nexusOverworldNodes[i].z/8,nexusOverworldNodes[i].name,true);
+ }
+ ctx.fillStyle = "rgba(255,255,255,1)";
+ ctx.strokeStyle = "rgba(0,0,0,1)";
+ for (var i = 0; i < nodes.length; i++)
+  drawLabel(ctx,nodes[i].x,nodes[i].z,'');
+
+ drawLabel(ctx,-128/8,358/8,'spawn');
+ drawLabel(ctx,0,0,'');
+
+ // draw ice roads TODO move to normal roads
+ var hypotenuse, adjacent, opposite, road;
+ ctx.lineWidth = 25;
+ ctx.strokeStyle = "rgba(173,216,230,0.25)";
+ ctx.lineWidth = 1;
+ ctx.strokeStyle = "rgba(255,255,255,1)";
+ var iceRoadsOffsets = [-2717,-2173,-1591,-1125,-582,0,582,1125,1591,2173,2717];
+ // for (var i = 0; i < iceRoadsOffsets.length; i++){
+ //  road = roads[i];
+ //  hypotenuse = maxRadius;
+ //  adjacent = iceRoadsOffsets[i];
+ //  opposite = Math.sqrt(hypotenuse*hypotenuse - adjacent*adjacent);
+ //  ctx.beginPath();
+ //  ctx.moveTo(adjacent + worldCenterX, -opposite + worldCenterZ);
+ //  ctx.lineTo(adjacent + worldCenterX,  opposite + worldCenterZ);
+ //  ctx.stroke();
+ //  ctx.beginPath();
+ //  ctx.moveTo(-opposite + worldCenterX, adjacent + worldCenterZ);
+ //  ctx.lineTo( opposite + worldCenterX, adjacent + worldCenterZ);
+ //  ctx.stroke();
+ // }
+ // { // TODO draw the diagonals?
+ //  var z = 214;
+ //  var xes = [-1819,-1051,-777,-227,323,597,1365];
+ //  for (var i = 0; i < xes.length; i++){
+ //   var x = xes[i];
+ //   ctx.beginPath();
+ //   ctx.moveTo(x - maxRadius, z - maxRadius);
+ //   ctx.lineTo(x + maxRadius, z + maxRadius);
+ //   ctx.stroke();
+ //   ctx.beginPath();
+ //   ctx.moveTo(x - maxRadius, z + maxRadius);
+ //   ctx.lineTo(x + maxRadius, z - maxRadius);
+ //   ctx.stroke();
+ //  }
+ // }
+
+} // end of function drawNFS()
+
+function drawNexusSlices(ctx,fixedPoint,numBack,numForward){
+ ctx.lineWidth = 5;
+ ctx.strokeStyle = "rgba(255,255,255,1)";
+ for (var i = -2; i < 6; i++){
+  var r1 = i*Math.PI/4-Math.PI/8;
+  var r2 = i*Math.PI/4+Math.PI/8;
+  ctx.beginPath();
+  ctx.moveTo(worldCenterX, worldCenterZ);
+  ctx.arc(worldCenterX, worldCenterZ, 20000, r1, r2);
+  var color;
+  switch (i+2){
+   case 0: color = color_pink; break;
+   case 1: color = color_red; break;
+   case 2: color = color_orange; break;
+   case 3: color = color_yellow; break;
+   case 4: color = color_lime; break;
+   case 5: color = color_lightblue; break;
+   case 6: color = color_blue; break;
+   case 7: color = color_purple; break;
+  }
+  ctx.fillStyle = color.replace('1.0','0.15');
+  ctx.fill();
+ }
+} // end of function drawNexusSlices()
+
+function zigzag(ctx,fixedPoint,numBack,numForward,iceRoads){
+ // draw the zigzag to infinity
+ // find the intersection between the 45deg line NE from here with the 22.5deg line from center, which is simply the X value in distance so just use sqrt(2)
+ var ratio = (1+1/Math.sqrt(2));
+ // this is the first set-point on the axis
+ var distances = [fixedPoint];
+ for (var i = 0; i < numForward + 1; i++)
+  distances.push(distances[distances.length-1]*ratio);
+ for (var i = 0; i < numBack; i++)
+  distances.unshift(distances[0]/ratio);
+
+ for (var r = 0; r < 8; r++){
+  var radians = Math.PI*2/8*r;
+  for (var posneg = -1; posneg <= 1; posneg+=2){
+
+   ctx.lineWidth = 5;
+   ctx.strokeStyle = "rgba(0,0,255,1)";
+
+   { // replacement for inner ring
+    ctx.beginPath();
+    moveToOffset(ctx, 263, -109, radians);
+    lineToOffset(ctx, 263, +109, radians);
+    ctx.stroke();
+   }
+
+   { // replacement for middle ring at 777
+    var ringR = 777;
+    var t1 = 80;
+    ctx.beginPath();
+    moveToOffset(ctx, ringR, -t1, radians);
+    lineToOffset(ctx, ringR, +t1, radians);
+    ctx.stroke();
+    // add the *approximately* 15 degree segments;
+    //  forcing this to 3:1 so it is easier to create in-game
+    var t2 = 3*71;
+    var t3 = 1*71;
+    ctx.beginPath();
+    moveToOffset(ctx, ringR, +t1, radians);
+    lineToOffset(ctx, ringR-t3, +t1+t2, radians);
+    ctx.stroke();
+    ctx.beginPath();
+    moveToOffset(ctx, ringR, -t1, radians);
+    lineToOffset(ctx, ringR-t3, -t1-t2, radians);
+    ctx.stroke();
+   }
+
+   { // replacement for outer ring at 2250
+    var ringR = 2250;
+    var t1 = 280;
+    ctx.beginPath();
+    moveToOffset(ctx, ringR, -t1, radians);
+    lineToOffset(ctx, ringR, +t1, radians);
+    ctx.stroke();
+    if ( r % 1 == 0){
+     var t2 = 4*148;
+     var t3 = 1*148;
+     ctx.beginPath();
+     moveToOffset(ctx, ringR, +t1, radians);
+     lineToOffset(ctx, ringR-t3, +t1+t2, radians);
+     ctx.stroke();
+     ctx.beginPath();
+     moveToOffset(ctx, ringR, -t1, radians);
+     lineToOffset(ctx, ringR-t3, -t1-t2, radians);
+     ctx.stroke();
+    }
+   }
+
+   if (iceRoads & r % 2 == 0){
+    ctx.lineWidth = 25;
+    ctx.strokeStyle = "rgba(128,128,255,0.25)";
+
+    ctx.beginPath();
+    moveToOffset(ctx, 0, 0, radians);
+    lineToOffset(ctx, 0, 10000*posneg, radians);
+    ctx.stroke();
+    ctx.beginPath();
+    moveToOffset(ctx, 225, 0, radians);
+    lineToOffset(ctx, 225, 10000*posneg, radians);
+    ctx.stroke();
+
+    for (var i = 1; i < distances.length - 1; i++){
+     var x1 = distances[i];
+     ctx.beginPath();
+     moveToOffset(ctx, x1, 0, radians);
+     lineToOffset(ctx, x1, 10000*posneg, radians);
+     ctx.stroke();
+    }
+   }
+
+   ctx.lineWidth = 5;
+   ctx.strokeStyle = "rgba(0,255,0,1)";
+   for (var i = 1; i < distances.length - 1; i++){
+    var x1 = distances[i-1];
+    var x2 = distances[i];
+    var x3 = distances[i+1];
+
+    ctx.beginPath();
+    moveToOffset(ctx, x1, 0, radians);
+    lineToOffset(ctx, x2, 0, radians);
+    ctx.stroke();
+
+    ctx.beginPath();
+    moveToOffset(ctx, x1, 0, radians);
+    lineToOffset(ctx, x2, (x2-x1)*posneg, radians);
+    ctx.stroke();
+
+    ctx.beginPath();
+    moveToOffset(ctx, x2, (x2-x1)*posneg, radians);
+    lineToOffset(ctx, x2, 0, radians);
+    ctx.stroke();
+   }
+  }
+ }
+} // end of function zigzag()
+function moveToOffset(ctx, x, z, radians){
+ // rotate <x,z> by radians
+ var point = rotate(0, 0, x, z, radians);
+ x = point[0];
+ z = point[1];
+ ctx.moveTo(x + worldCenterX, z + worldCenterZ);
+}
+function lineToOffset(ctx, x, z, radians){
+ var point = rotate(0, 0, x, z, radians);
+ x = point[0];
+ z = point[1];
+ ctx.lineTo(x + worldCenterX, z + worldCenterZ);
+}
+function rotate(cx, cy, x, y, radians) {
+    var cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return [nx, ny];
+}
+function getPrev(nodes,type,i){
+ var infinite_loop_check = i;
+ while (--i != infinite_loop_check){
+  if (i < 0)
+   i = nodes.length - 1;
+  if (nodes[i].type == type)
+   return i;
+ }
+ console.log('Error: getPrev failed to find a match');
+}
+function getNext(nodes,type,i){
+ var infinite_loop_check = i;
+ while (++i != infinite_loop_check){
+  if (i >= nodes.length)
+   i = 0;
+  if (nodes[i].type == type)
+   return i;
+ }
+ console.log('Error: getNext failed to find a match');
+}
+
+function drawPillar(ctx,node) {
+ //console.log('waypoint:NFS:N:' + (node.x * 8) + ':65:' + (node.z * 8) + ':13:false:0:gui.xaero_default:false:0:false');
+ var x = node.x;
+ var z = node.z;
+ 
+ // area of a beacon
+ ctx.beginPath();
+ ctx.rect(x - 50, z - 50, 100, 100);
+ ctx.fillStyle = "rgba(255,255,255,0.14)";
+ ctx.fill();
+
+ // pillar
+ ctx.beginPath();
+ ctx.arc(x, z, 8, 0, 2 * Math.PI);
+ ctx.fillStyle = node.color;
+ ctx.fill();
+}
+function drawOverworldPoint(ctx,node) {
+ // tiny white square with black center
+ var x = node.x/8;
+ var z = node.z/8;
+
+ ctx.beginPath();
+ ctx.moveTo(x-0,z-4);
+ ctx.lineTo(x+4,z+0);
+ ctx.lineTo(x+0,z+4);
+ ctx.lineTo(x-4,z+0);
+ ctx.lineTo(x+0,z-4);
+ ctx.fill();
+
+ ctx.beginPath();
+ ctx.moveTo(x-0,z-5);
+ ctx.lineTo(x+5,z+0);
+ ctx.lineTo(x+0,z+5);
+ ctx.lineTo(x-5,z+0);
+ ctx.lineTo(x+0,z-5);
+ ctx.stroke();
+}
+function drawLabel(ctx,x,z,label,suppressCoords) {
+ ctx.textAlign = 'right';
+ ctx.strokeText('  '+label+'  ',x,z);
+ ctx.fillText('  '+label+'  ',x,z);
+
+ if (suppressCoords !== true){
+  ctx.textAlign = 'left';
+  label = '  '+'(' + Math.floor(x) + ',' + Math.floor(z) + ')'+'  ';
+  ctx.strokeText(label,x,z);
+  ctx.fillText(label,x,z);
+ }
+}
+
+function fillTables() {
+ var nfs,table,nodes,node,roads,road,tr,td,i;
+ nfs = getNFS();
+
+ nodes = nfs.nodes;
+ table = document.getElementById('nodes');
+ for (i = 0; i < nodes.length; i++){
+  node = nodes[i];
+  tr = document.createElement('tr');
+  table.appendChild(tr);
+  td = document.createElement('td');
+  td.textContent = node.type;
+  tr.appendChild(td);
+  td = document.createElement('td');
+  td.textContent = node.color;
+  tr.appendChild(td);
+  td = document.createElement('td');
+  td.textContent = node.x;
+  tr.appendChild(td);
+  td = document.createElement('td');
+  td.textContent = node.z;
+  tr.appendChild(td);
+ }
+
+ table = document.getElementById('roads');
+ road_distances = nfs.road_distances;
+ for (i = 0; i < road_distances.length; i++){
+  road_distance = road_distances[i];
+  tr = document.createElement('tr');
+  table.appendChild(tr);
+  td = document.createElement('td');
+  td.textContent = road_distance.color;
+  tr.appendChild(td);
+  td = document.createElement('td');
+  td.textContent = road_distance.distance;
+  tr.appendChild(td);
+  td = document.createElement('td');
+  td.textContent = road_distance.material;
+  tr.appendChild(td);
+ }
+}
+
+document.addEventListener("DOMContentLoaded", drawNFS, false);
+//document.addEventListener("DOMContentLoaded", fillTables, false);
+    </script>
+</head>
+
+<body host="MCX.GLITCH.ME">
+
+<label for="version">Version</label>
+<select name="version" id="version" onchange="{drawNFS();}">
+  <option value="1">1</option>
+  <option value="2" selected="selected">2</option>
+  <option value="2.5">2 + boat ice</option>
+</select>
+<label for="maxRadius">World Border</label>
+<select name="maxRadius" id="maxRadius" onchange="{drawNFS();}">
+  <option value="2625">21000 (/8=2625)</option>
+  <option value="3125" selected="selected">+4,000 (+500)</option>
+  <option value="3625">+8,000 (+1,000)</option>
+  <option value="4625">+16,000 (+2,000)</option>
+  <option value="7625">+40,000 (+5,000)</option>
+  <option value="12625">+80,000 (+10,000)</option>
+  <option value="22625">+160,000 (+20,000)</option>
+</select>
+<label for="scaledown">Downsize</label>
+<select name="scaledown" id="scaledown" onchange="{drawNFS();}">
+  <option value="1">1 pixel:1 Block</option>
+  <option value="2" selected="selected">1 pixel:2 Blocks</option>
+  <option value="4">1 pixel:4 Blocks</option>
+  <option value="8">1 pixel:8 Blocks</option>
+  <option value="16">1 pixel:16 Blocks</option>
+  <option value="32">1 pixel:32 Blocks</option>
+</select>
+<br/>
+
+ <canvas height="100" width="100"></canvas>
+ <h1>NOTE: below is no longer accurate, and completely ignores v2</h1>
+ <ul style="width:80%">
+  <li>On YouTube: <a href="https://youtu.be/FEyeeySaPRU">Concept for the Nether Freeway System in MinecraftOnline</a></li>
+  <li>All objects shown basically to scale.</li>
+  <li>NFS roads are 5 blocks wide. They are all to be highly-visible, far enough above lava-level they can be seen from a distance. There are different types of roads, noted by the color on the map. Each type will be built from a different material, and at a different elevation.</li>
+  <ul>
+   <li>Y=74: <b>Straight</b> roads are <span style="color:green;">green</span> on the map, made of Spruce with Glowstone</li>
+   <li>Y=64: <b>Nexus</b> roads are <span style="color:red;">red</span> on the map, made of Stone Brick with Sea Lanterns</li>
+   <li>Y=54: <b>Ring</b> roads are <span style="color:blue;">blue</span> on the map, made of Red Nether Brick with Redstone Lamps</li>
+   <li>Y=44: <b>Outer</b> roads are <span style="color:purple;">purple</span> on the map, made of Blackstone and/or Basalt and/or Deepslate (TBD) probabaly with End Rods.</li>
+  </ul>
+  <li>Pillars are 15 blocks wide (diameter).</li>
+  <ul>
+   <li>They will be cylinders the entire height of the Nether from Bedrock to Bedrock, with a Beacon near the base giving Speed II.</li>
+   <li>The gray squares around them indicate the max range of the Beacon status effect, 50 blocks out (100x100).</li>
+  </ul>
+  <li>There will be 89 Pillars in total:</li>
+  <ul>
+   <li>57 Pillars are aligned to correspond to Nexus points</li>
+   <li>16 Pillars at forks between branches and hubs, and forks between hubs and borderlands hubs</li>
+   <li>16 Pillars at intersections of Outer roads</li>
+  </ul>
+  <li>Overworld locations of all Nexus points are indicated with a &#x25C6; diamond (you can see that many of them are noticeably not centered correctly)</li>
+ </ul>
+ <table id="nodes" style="float:left;margin:1em;">
+  <caption>NFS Pillars</caption>
+  <tr>
+   <th>Type</th>
+   <th>Color</th>
+   <th>X</th>
+   <th>Z</th>
+  </tr>
+ </table>
+ <table id="roads" style="float:left;margin:1em;">
+  <caption>NFS Roads</caption>
+  <tr>
+   <th>Color</th>
+   <th>Length</th>
+   <th>Material</th>
+  </tr>
+ </table>
+</body>
+</html>

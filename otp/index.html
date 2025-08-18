@@ -1,126 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="description" content="Simple encryption/decryption using a one-time-pad." />
-    <meta name="author" content="http://abamacus.net" />
-    <title>One Time Pad</title>
-    <!--
-    Source code is hosted at [GitHub](https://github.com/abamacus/abamacus.net/).
+<meta charset="utf-8" />
+<meta name="description" content="Simple encryption/decryption using a one-time-pad." />
+<meta name="author" content="http://abamacus.net" />
+<title>One Time Pad</title>
+<style>
+* { font-family: 'Verdana' , 'Arial' , 'Times New Roman'; }
+blockquote:before, blockquote:after { content: ''; }
+body { background-color: #DFDFDF; }
+textarea {
+ font-family: 'Consolas', 'Courier New', 'Lucida Console', 'Monospace';
+ font-size: 16px;
+ line-height: 1em;
+}
+textarea[readonly="true"] {
+ background-color: #DFDFDF;
+}
+body > div {
+ display: inline-block;
+}
+.majorDiv {
+ padding: 5px;
+ border: 1px solid rgba(0, 0, 0, 0.5);
+ margin: 2px;
+}
+#divInput    { background-color: #DED; }
+#divAlphabet { background-color: #DDE; }
+#divKey      { background-color: #EED; }
+#divOutput   { background-color: #EDD; }
 
-    Compatibility
-    =============
-    This was tested with the following browsers:
-    - Google Chrome, version 46.0.2490.80 m
-    - Firefox, version 41.0.2
-    - Internet Explorer, version 11.0.9600.18059CO
+.hoverable > div {
+ display: none;
+}
+.hoverable:hover > div {
+ display: initial;
+ position: absolute;
+ background-color: #EFEFEF;
+ border: 1px solid #000;
+ padding: 5px;
+ max-width: 20em;
+}
 
-    Legal
-    =====
-    This work is "No Rights Reserved" -- that is, licensed under [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
-    More formally:
-        To the extent possible under law, the original author "abamacus" (real name redacted)
-        has waived all copyright and related or neighboring rights to this project.
-        This work is published from the United States.
-    Please copy and share.
+.help::before {
+ font-family: 'Consolas', 'Courier New', 'Lucida Console', 'Monospace';
+ content: "?";
+ padding: 0.25em;
+}
+.help {
+ text-align: left;
+ display: inline-block;
+ min-width: 1em;
+ background: #FFFFFF;
+ border: 1px solid #000000;
+ border-radius: 1em;
+}
 
-    Credits
-    =======
-    Written by abamacus in October, 2015.
-    Thanks to:
-    - [Wikipedia](en.Wikipedia.org), for initial reference on the "One Time Pad"
-    - [Security Now](twit.tv/sn) podcast, for increasing my interest in cryptography
-    - [Stack Overflow](stackoverflow.com), for answers to lots of javascript questions
-    - [World Wide Web Consortium](w3c.org), for good references on all things web
-    - [Google](google.com/search?q=google+chrome), for helping me find *everything*, and making a great browser to debug in
+input[type="radio"] + label {
+ color: #7F7F7F;
+}
+input[type="radio"]:checked + label {
+ color: initial;
+}
+#warning > div {
+ color: #F00;
+ background: #FFFFFF;
+ border-radius: 7px;
+ padding: 3px;
 
-    -->
-    <style>
-        /* RESET BEGIN */
-        body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td
-        { margin: 0; padding: 0; font-family: 'Verdana' , 'Arial' , 'Times New Roman'; }
-        table { border-collapse: collapse; border-spacing: 0; }
-        fieldset, img { border: 0; }
-        address, caption, cite, code, dfn, th, var { font-style: normal; font-weight: normal; }
-        caption, th { text-align: left; }
-        h1, h2, h3, h4, h5, h6 { font-size: 100%; font-weight: normal; }
-        q:before, q:after { content: ''; }
-        abbr, acronym { border: 0; }
-        /* RESET END */
-        body{
-         background-color: #DFDFDF;
-         font-family: 'Consolas', 'Courier New', 'Lucida Console', 'Monospace';
-        }
-        textarea {
-         font-size: 16px;
-         line-height: 1em;
-        }
-        #uiOutput {
-         background-color: #DFDFDF;
-        }
-        body > div {
-         display: inline-block;
-        }
-        .majorDiv {
-         padding: 5px;
-         border: 1px solid rgba(0, 0, 0, 0.5);
-         margin: 2px;
-        }
-        #divInput    { background-color: #DED; }
-        #divAlphabet { background-color: #DDE; }
-        #divKey      { background-color: #EED; }
-        #divOutput   { background-color: #EDD; }
+ max-height: 10em;
+ overflow: hidden;
+ height: auto;
 
-        .hoverable > div {
-         display: none;
-        }
-        .hoverable:hover > div {
-         display: initial;
-         position: absolute;
-         background-color: #EFEFEF;
-         background-color: rgba(255, 255, 255, 0.75);
-         border: 1px solid #000;
-         padding: 5px;
-         max-width: 20em;
-        }
+ opacity: 1;
+ transition: 0.25s;
+ transition-property: max-height, opacity;
+}
+#warning > div.hide {
+ opacity: 0;
+ max-height: 0;
+}
+  #about{
+ background: #FFFFFF;
+  }
+</style>
+<script>//<!--
+function byId(id){
+ return document.getElementById(id);
+}
+function warning(message){
+  let uiDiv = document.createElement('DIV');
+  uiDiv.innerText = message;
+  byId('warning').appendChild(uiDiv);
+  uiDiv.setAttribute('class', 'hide');
+  // fade-in after a microsecond
+  setTimeout(function () { uiDiv.removeAttribute('class'); }, 1);
+  let timeout = 10000;  // remove after 10 seconds
+  let transition = 250; // the transition is 0.25s
+  // set fade-out timer
+  setTimeout(function () { uiDiv.setAttribute('class', 'hide'); }, timeout - transition);
+  // set remove timer
+  setTimeout(function () { uiDiv.remove(); }, timeout);
+}
+function encrypt() {
+ var input = byId('uiInput').value;
+ var key = byId('uiKey').value;
+ var alphabet = byId('uiAlphabet').value;
+ var encrypt = byId('uiEncrypt').checked;
+ try {
+  byId('uiOutput').value = cipher(input,key,alphabet,encrypt);
+ } catch (e) {
+  byId('uiOutput').value = e.name + '\n' + e.message;
+ }
+}
+function updateInput() {
+ byId('uiInputSize').textContent = byId('uiInput').value.length;
+ encrypt();
+}
+function updateKey() {
+ byId('uiKeySize').textContent = byId('uiKey').value.length;
+ encrypt();
+}
+function generateKey() {
+ function rnd(n){ return Math.floor((Math.random() * n)); }
+ var alphabet = byId('uiAlphabet').value;
+ var inputLength = byId('uiInput').value.length;
+ var keyArray = new Array();
+ for (var i = 0 ; i < inputLength ; ++i ){
+  var r = rnd(alphabet.length);
+  keyArray[i] = alphabet[r];
+ }
 
-        .help::before {
-         content: "?";
-        }
-        .help {
-         text-align: center;
-         display: inline-block;
-         min-width: 1em;
-         background: #FFFFFF;
-         border: 1px solid #000000;
-         border-radius: 1em;
-        }
+ byId('uiKey').value = keyArray.join('');
+ updateKey();
+ warning('This key was NOT generated using cryptographically secure methods');
+}
+function updateAlphabet() {
+ function onlyUnique(value, index, self) { return self.indexOf(value) === index; }
+ var alphabet = byId('uiAlphabet').value;
+ // keep only distinct values
+ alphabet = alphabet.split('').filter(onlyUnique).join('');
+ if (byId('uiAlphabet').value != alphabet)
+  byId('uiAlphabet').value = alphabet;
+ byId('uiAlphabetSize').textContent = alphabet.length;
+ switch (alphabet) {
+  case ALPHABET_26:
+   byId('uiAlphabetSet').selectedIndex = 0;
+   break;
+  case ALPHABET_96:
+   byId('uiAlphabetSet').selectedIndex = 1;
+   break;
+  case ALPHABET_64:
+   byId('uiAlphabetSet').selectedIndex = 2;
+   break;
+  case ALPHABET_16:
+   byId('uiAlphabetSet').selectedIndex = 3;
+   break;
+  case ALPHABET_10:
+   byId('uiAlphabetSet').selectedIndex = 4;
+   break;
+  default:
+   byId('uiAlphabetSet').selectedIndex = 5;
+   break;
+ }
+}
+function sortAlphabet() {
+ var alphabet = byId('uiAlphabet').value;
+ alphabet = alphabet.split('').sort().join('');
+ byId('uiAlphabet').value = alphabet;
+ updateAlphabet();
+}
+var ALPHABET_26 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var ALPHABET_96 = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '\n'
+                + '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}\|;:'
+                + "'" + '",.<>/?`~	';
+var ALPHABET_64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+var ALPHABET_16 = '0123456789ABCDEF';
+var ALPHABET_10 = '0123456789';
+function alphabetContainsValues(alphabet, value){
+ for (var i = 0 ; i < value.length ; ++i ){
+  var indexValue = alphabet.indexOf(value[i]);
+  if (indexValue == -1)
+   console.log(value[i] + ' = char code ' + value.charCodeAt(i));
+  if (indexValue == -1)
+   return false;
+ }
+ return true;
+}
+function getSelectedAlphabet() {
+ var i = byId('uiAlphabetSet').selectedIndex;
+ var options = byId('uiAlphabetSet').getElementsByTagName('option');
+ var selectedOptionValue = options[i].value;
+ switch (selectedOptionValue) {
+  case '26':
+   return ALPHABET_26;
+  case '96':
+   return ALPHABET_96;
+  case '64':
+   return ALPHABET_64;
+  case '16':
+   return ALPHABET_16;
+  case '10':
+   return ALPHABET_10;
+  case '':
+   // whatever the existing value is
+   return byId('uiAlphabet').value;
+  default:
+   return 'Logic error - unexepcted value "' + selectedOptionValue + '" in selectAlphabet.';
+ }
+}
+function selectAlphabet() {
+ var alphabet = getSelectedAlphabet();
+ byId('uiAlphabet').value = alphabet;
+ byId('uiAlphabetSize').textContent = alphabet.length;
+ encrypt();
+}
 
-        input[type="radio"] + label {
-         color: #7F7F7F;
-        }
-        input[type="radio"]:checked + label {
-         color: initial;
-        }
-    </style>
+function saveBlobToFile(fileNameToSaveAs, blob) {
+ var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+     // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
+ var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+ var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+     // At least Safari 3+: "[object HTMLElementConstructor]"
+ var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
+ var isIE = window.navigator.userAgent.match(/MSIE\s([\d.]+)/),
+  ie11 = window.navigator.userAgent.match(/Trident\/7.0/) && navigator.userAgent.match(/rv:11/),
+  //"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3)"
+  ieVer = (isIE ? isIE[1] : (ie11 ? 11 : -1));
+ if (isIE && ieVer < 10) {
+  window.alert('Cannot save file in Internet Explorer 9 (or earlier)')
+  return;
+ }
+
+ if (isIE || ie11) { // or: if (window.navigator.appName == 'Microsoft Internet Explorer')
+  window.alert('1');
+  window.navigator.msSaveBlob(blob, fileNameToSaveAs);
+ } else {
+  var downloadLink = document.createElement('a');
+  downloadLink.download = fileNameToSaveAs;
+  downloadLink.innerHTML = 'Download File';
+
+  downloadLink.href = window.URL.createObjectURL(blob);
+
+  if (isFirefox) {
+   // Firefox requires the link to be added to the DOM before it can be clicked.
+   // (Chrome allows the link to be clicked without actually adding it to the DOM.)
+   downloadLink.onclick = function destroyClickedElement(event) { document.body.removeChild(event.target); }
+   downloadLink.style.display = 'none';
+   document.body.appendChild(downloadLink);
+  }
+
+  downloadLink.click();
+ }
+}
+
+function blobToBase64(value){
+ // using the built-in function (but removing the suffix "pad" characters)
+ return btoa(value).replace(/=/g, '');
+}
+function base64ToBlob(b64Data, contentType, sliceSize) {
+ contentType = contentType || '';
+ sliceSize = sliceSize || 512;
+
+ var byteCharacters = atob(b64Data);
+ var byteArrays = [];
+
+ for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+  var slice = byteCharacters.slice(offset, offset + sliceSize);
+  var byteNumbers = new Array(slice.length);
+  for (var i = 0; i < slice.length; i++) {
+   byteNumbers[i] = slice.charCodeAt(i);
+  }
+  var byteArray = new Uint8Array(byteNumbers);
+  byteArrays.push(byteArray);
+ }
+ var blob = new Blob(byteArrays, {type: contentType});
+ return blob;
+}
+
+function dumb_readAsBinaryString(file){
+ this.old_onloadend = this.onloadend;
+ function new_onloadend(){
+  var bytes = new Uint8Array(this.result);
+  var binary = '';
+  for (var i = 0; i < bytes.byteLength; i++) {
+   binary += String.fromCharCode(bytes[i]);
+  }
+  // trying to just set "this.result = binary;" doesn't work in IE, no idea why.
+  // so instead, this is a more terrible hack to let the old_onloadend run.
+  //this.result = binary;
+  var o = new Object();
+  o.result = binary;
+  o.target = this.target;
+  o.onloadend = this.old_onloadend;
+  o.onloadend();
+ }
+ this.onloadend = new_onloadend;
+ this.readAsArrayBuffer(file);
+}
+if (FileReader.prototype.readAsBinaryString == undefined)
+ FileReader.prototype.readAsBinaryString = dumb_readAsBinaryString;
+function loadendFileReader () {
+ var fileContents = this.result;
+ if (byId('uiAlphabet').value == ALPHABET_64)
+ {
+  if (alphabetContainsValues(ALPHABET_96 + '\r', fileContents))
+   warning('File contents appears to be plain text; consider selecting alphabet "Keyboard (base 96)", and Uploading again');
+  fileContents = blobToBase64(fileContents);
+  this.target.value = fileContents;
+ }
+ else
+ {
+  this.target.value = fileContents;
+  // instead of checking the raw file contents, check the value after set on the object;
+  // this prevents tripping up on files with \r or \r\n line breaks
+  if (!alphabetContainsValues(byId('uiAlphabet').value, this.target.value))
+   warning('File contents appears to be binary; consider selecting alphabet "MIME (base 64)", and Uploading again');
+ }
+}
+function uploadInput() {
+ var file = byId('uiInputFile').files[0];
+ if (typeof file == 'undefined') // use cancelled file dialog
+  return;
+ var reader = new FileReader();
+ reader.target = byId('uiInput');
+ reader.onloadend = loadendFileReader; 
+ reader.readAsBinaryString(file);
+}
+function uploadKey() {
+ var file = byId('uiKeyFile').files[0];
+ var reader = new FileReader();
+ reader.target = byId('uiKey');
+ reader.onloadend = loadendFileReader;
+ reader.readAsBinaryString(file);
+}
+function downloadOutput() {
+ var filename = (byId('uiEncrypt').checked) ? 'ciphertext.otp' : 'plaintext.txt'
+ if (byId('uiAlphabet').value == ALPHABET_64) {
+  var base64Value = byId('uiOutput').value;
+  var blob = base64ToBlob(base64Value, 'text/plain; charset=x-user-defined');
+  saveBlobToFile(filename, blob);
+ } else {
+  var textToWrite = byId('uiOutput').value;
+  var blob = new Blob([textToWrite], { type: 'text/plain' });
+  saveBlobToFile(filename, blob);
+ }
+}
+
+function toArrayOfIndexes(value, alphabet) {
+ var array = value.split('');
+ for (var i = 0 ; i < value.length ; ++i ){
+  var indexValue = alphabet.indexOf(array[i]);
+  if (indexValue == -1)
+   throw new Error('character "' + array[i] + '" was not found in the alphabet.');
+  array[i] = indexValue;
+ }
+ return array;
+}
+function fromArrayOfIndexes(array, alphabet) {
+ var tempArray = [];
+ for (var i = 0 ; i < array.length ; ++i ){
+  tempArray[i] = alphabet[array[i]];
+ }
+ return tempArray.join('');
+}
+function cipher(input, key, alphabet, encrypt) {
+ // validation
+ if (input.length > key.length)
+  throw new Error('input cannot be shorter than the key for One Time Pad encryption.');
+
+ function onlyUnique(value, index, self) { return self.indexOf(value) === index; }
+ if (alphabet.length != alphabet.split('').filter(onlyUnique).join('').length)
+  throw new Error('alphabet values are not all unique.');
+
+ // use arrays of numbers instead of operating directly on string values
+ var inputArray = toArrayOfIndexes(input, alphabet);
+ var keyArray = toArrayOfIndexes(key, alphabet);
+
+ var outputArray = [];
+ for (var i = 0 ; i < key.length ; ++i ){
+  if (encrypt) // compute the ciphertext version of this value
+   outputArray[i] = (inputArray[i] + keyArray[i]) % alphabet.length;
+  else // compute the plaintext version of this value
+   outputArray[i] = (inputArray[i] + alphabet.length - keyArray[i]) % alphabet.length;
+ }
+
+ return fromArrayOfIndexes(outputArray, alphabet);
+}
+
+
+function dropMethod(e) {
+ e = e || window.event; // get window.event if e argument missing (in IE)
+ if (e.preventDefault) { e.preventDefault(); } // stops the browser from redirecting off to the image.
+ var dt = e.dataTransfer;
+ var files = dt.files;
+ if (files.length > 1) {
+  e.target.value = 'Can only drop one file';
+  return;
+ }
+ var file = files[0];
+ var reader = new FileReader();
+ reader.target = e.target;
+ reader.onloadend = loadendFileReader;
+ reader.readAsBinaryString(file);
+ return false;
+}
+
+function initialize() {
+ // add event listeners
+ byId('uiInput').addEventListener('input', updateInput);
+ byId('uiKey').addEventListener('input', updateKey);
+ byId('uiGenerateKey').addEventListener('click', generateKey);
+ byId('uiAlphabet').addEventListener('input', updateAlphabet);
+ byId('uiSortAlphabet').addEventListener('click', sortAlphabet);
+ byId('uiAlphabetSet').addEventListener('change', selectAlphabet);
+ byId('uiInputFile').addEventListener('input', uploadInput);
+ byId('uiKeyFile').addEventListener('input', uploadKey);
+ byId('uiDownloadOutput').addEventListener('click', downloadOutput);
+ // file drop handling
+ function cancel(e) { if (e.preventDefault) e.preventDefault(); return false; }
+ byId('uiInput').addEventListener('dragover', cancel);
+ byId('uiInput').addEventListener('dragenter', cancel);
+ byId('uiInput').addEventListener('drop', dropMethod);
+ byId('uiKey').addEventListener('dragover', cancel);
+ byId('uiKey').addEventListener('dragenter', cancel);
+ byId('uiKey').addEventListener('drop', dropMethod);
+
+ updateInput();
+ updateKey();
+ byId('uiAlphabetSet').selectedIndex = 1;
+ selectAlphabet();
+ encrypt();
+}
+window.addEventListener('load', initialize);
+//--></script>
 </head>
 
 <body>
 
 <div class="majorDiv" id="divInput">
- <span class="hoverable help"><div>
+ <div class="hoverable help"><div>
    - The Input is the original "plain text" message (to encrypt), or the encrypted message (to decrypt).
    <br/>
    - The Input may only contain values that are in the selected Alphabet.
-  </div></span>
-    <label>Input</label>
-    <span id="uiInputSize"></span> characters
-    <button type="button" onclick="byId('uiInput').value = '';">Clear</button>
-    <br/>
-    <input id="uiInputFile" type="file" />
-    <button id="uiUploadInput" type="button">Upload</button>
-    <br/>
-    <textarea id="uiInput" rows="10" cols="50">This is an example input message.
+  </div></div>
+ <label>Input</label>
+ <span id="uiInputSize"></span> characters
+ <button type="button" onclick="byId('uiInput').value = '';">Clear</button>
+ <br/>
+ <input id="uiInputFile" type="file" />
+ <br/>
+ <textarea id="uiInput" rows="10" cols="50">This is an example input message.
 To demonstrate / test:
 1) click Generate Key
 2) copy the Output text
@@ -129,44 +459,38 @@ To demonstrate / test:
 5) select Decrypt</textarea>
 </div>
 <div class="majorDiv" id="divAlphabet">
-    <label>Alphabet</label>
-    <span id="uiAlphabetSize"></span> characters
-    <br/>
-    <button id="uiSortAlphabet" type="button">Sort</button>
-    <select id="uiAlphabetSet">
-        <option value="26">Classic (26 letters)</option>
-        <option value="96">Keyboard (base 96)</option>
-        <option value="64">MIME (base 64)</option>
-        <option value="16">Hex (base 16)</option>
-        <option value="10">Numeric (base 10)</option>
-        <option value="">Custom</option>
-    </select>
-    <br/>
-    <textarea id="uiAlphabet" rows="10" cols="50"></textarea>
+ <label>Alphabet</label>
+ <span id="uiAlphabetSize"></span> characters
+ <br/>
+ <button id="uiSortAlphabet" type="button">Sort</button>
+ <select id="uiAlphabetSet">
+  <option value="26">Classic (26 letters)</option>
+  <option value="96">Keyboard (base 96)</option>
+  <option value="64">MIME (base 64)</option>
+  <option value="16">Hex (base 16)</option>
+  <option value="10">Numeric (base 10)</option>
+  <option value="">Custom</option>
+ </select>
+ <br/>
+ <textarea id="uiAlphabet" rows="10" cols="50"></textarea>
 </div>
 
 <div class="majorDiv" id="divKey">
- <span class="hoverable help"><div>
+ <div class="hoverable help"><div>
    - The Key should be a perfectly random distribution of all of the characters in the "Alphabet".
    <br/>
    - The Key must be at least as long as the input message.
    <br/>
-   - NOTE: the Output will be as long as the key.
-  </div></span>
-    <label>Key</label>
-    <span id="uiKeySize"></span> characters
-    <button type="button" onclick="byId('uiKey').value = '';">Clear</button>
-    <button class="hoverable" id="uiGenerateKey" type="button">
-        Generate Key
-        <div>
-            WARNING: this key generation is not cryptographically secure
-        </div>
-    </button>
-    <br/>
-    <input id="uiKeyFile" type="file" />
-    <button id="uiUploadKey" type="button">Upload</button>
-    <br/>
-    <textarea id="uiKey" rows="10" cols="50">
+   - NOTE: the Output will be as long as the key, even if the input is shorter.
+  </div></div>
+ <label>Key</label>
+ <span id="uiKeySize"></span> characters
+ <button type="button" onclick="byId('uiKey').value = '';">Clear</button>
+ <button id="uiGenerateKey" type="button">Generate Key</button>
+ <br/>
+ <input id="uiKeyFile" type="file" />
+ <br/>
+ <textarea id="uiKey" rows="10" cols="50">
 ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
 This is not a secure key.
 ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
@@ -176,326 +500,173 @@ This is not a secure key.
 </textarea>
 </div>
 <div class="majorDiv" id="divOutput">
-    <label>Output</label>
-    <input type="radio" id="uiEncrypt" name="toEncryptOrDecrypt" onchange="encrypt();" checked="checked" /><label for="uiEncrypt">Encrypt</label>
-    <input type="radio" id="uiDecrypt" name="toEncryptOrDecrypt" onchange="encrypt();" /><label for="uiDecrypt">Decrypt</label>
-    <br/>
-    <button id="uiDownloadOutput" type="button">Save As</button>
-    <br/>
-    <textarea id="uiOutput" rows="10" cols="50" readonly="true"></textarea>
+ <label>Output</label>
+ <input type="radio" id="uiEncrypt" name="toEncryptOrDecrypt" onchange="encrypt();" checked="checked" /><label for="uiEncrypt">Encrypt</label>
+ <input type="radio" id="uiDecrypt" name="toEncryptOrDecrypt" onchange="encrypt();" /><label for="uiDecrypt">Decrypt</label>
+ <br/>
+ <button id="uiDownloadOutput" type="button">Save As</button>
+ <br/>
+ <textarea id="uiOutput" rows="10" cols="50" readonly="readonly"></textarea>
 </div>
+
+  <span style="display: block; clear: both;"></span>
+  <div id="warning"></div>
+  <hr/>
+
+  <a href="#about" onclick="byId('about').style.display='';this.remove();">Show more information</a>
+  <div id="about" style="display: none;">
+  <h2>Summary</h2>
+  <p>
+    One-Time Pad is a very simple method of how for absolutely perfect
+    (that is, unbreakable) encryption.
+    The concept of was first described by Frank Miller in 1882,
+    but has never been used widely, due to the requirement that the encryption key
+    be the same length as the message being sent.
+  </p>
+  <p>
+    For a reasonably good overview and history, see
+    <a href="https://en.wikipedia.org/wiki/One-time_pad">wikipedia</a>
+  </p>
+  <p>
+    For a more full history of One-Time Pad encryption, see 
+    <a href="https://www.cryptomuseum.com/crypto/otp/index.htm">cryptomuseum.com</a>
+  </p>
+  <p>
+    The simple web site here is a demonstration of the One-Time Pad.
+    It is a fully functional model for encrypting/decrypting,
+    but does not have/use a good random number generator,
+    which is a critical part of using a One-Time Pad.
+    It is purely client-side, so could be used securely if you:
+  </p>
+  <ol>
+    <li> Save <a href="." download="OneTimePad.html">OneTimePad.html</a> locally to any computer/device that can open a local file in a browser</li>
+    <li> Disconnect the device from all networks, wireless access, drives, etc</li>
+    <li> For the "key", use your own set of <em>truly random</em> values. </li>
+  </ol>
+  <p> The "key" is the hard part. "Truly random values" means
+    they must be actually random, not a random page from your favorite book.
+    <em>And</em> they must never be intercepted by anyone other than the party you are communicating with.
+    <em>And</em> each set of values must only be used for one message. (I would say "only used once", but repeating the message has no effect on its security, as long as the same key is not used for a different message)
+  </p>
+  <p>
+    For guidance on how to create a truly secure key, read the below <em>Passwords / Cryptographically Secure Keys, For the Truly Paranoid</em>
+  </p>
+  
+  <h2>Code</h2>
+  <p> This is all self-contained in a single html file; right-click and View Source to access it.</p>
+  <p> Hosted at <a href="https://abamacus.net/otp">abamacus.net/otp</a> </p>
+
+  <h2>Legal</h2>
+  <p> This work is "No Rights Reserved" -- that is, licensed under
+    <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>. More formally:
+  </p>
+  <blockquote> To the extent possible under law, the publisher has waived
+      all copyright and related or neighboring rights to this project.
+      This work is published from the United States.
+  </blockquote>
+  <p> &#x2661; Please copy and share. </p>
+
+  <h2>Compatibility</h2>
+  <p> This has been tested with the following browsers: </p>
+  <ul>
+    <li> Google Chrome, version 46.0.2490.80 m </li>
+    <li> Firefox, version 41.0.2 </li>
+    <li> Internet Explorer, version 11.0.9600.18059CO </li>
+  </ul>
+  
+  <h2>Credits</h2>
+
+  <p> Written in October, 2015 by abamacus. (occasionally modified since then) </p>
+  <p> Thanks to: </p>
+  <ul>
+    <li> <a href="https://en.Wikipedia.org">Wikipedia</a>, for initial reference on the "One Time Pad" </li>
+    <li> <a href="https://twit.tv/sn">Security Now</a> podcast, for increasing my interest in cryptography </li>
+    <li> <a href="https://stackoverflow.com">Stack Overflow</a>, for answers to lots of javascript questions </li>
+    <li> <a href="https://w3c.org">World Wide Web Consortium</a>, for good references on all things web </li>
+    <li> <a href="https://google.com/search?q=google+chrome">Google</a>, for helping me find *everything*, and making a great browser to debug in </li>
+  </ul>
+
+  <h2> Passwords / Cryptographically Secure Keys, For the Truly Paranoid </h2>
+  <p> The One Time Pad method can be used to create passwords by combining values from multiple, less trusted sources. </p>
+  <p>
+    We have plenty of generators of "random" numbers and values.
+      One of the least secure is the basic random number generator provided in javascript, which is what the "Generate Key" button uses.
+ </p>
+  <p>
+    But if you want to have really secure values, you need a few things:
+  </p>
+  <ul>
+    <li> The source should be really random - most computer-generated "random" values are actually deterministic, if you know something about the state of the computer when the "random" value was generated. </li>
+    <li> The generated value should never be stored in an insecure location. (This is up to the user to secure; for a password or other short values, presumably you would memorize it, or write it down in a secure location) </li>
+    <li> The generated value should never be transmitted over an insecure connection. You can mitigate this by generating random values from multiple sources, and combining them. </li>
+  </ul>
+  <p> The last part is what the One Time Pad method can help with. If you want the most secure possible method of generating random values, use the following steps. </p>
+  <ol>
+    <li> Decide on your "alphabet"; all the possible values that your password/key can contain.
+        There are a few suggested sets to use in the dropdown by "Alphabet". </li>
+    <li>
+      Use multiple sources of random values, that you more-or-less trust.
+      <ul>
+        <li>
+          You want to collect multiple random values, pulled from different sources, each of which would be a full-length "pretty good" random value by itself.
+        </li>
+        <li>
+          This could include rolling dice, trying to come up with random characters in your head, whatever you think is "really good".
+        </li>
+        <li>
+          If your preferred source uses a different alphabet than you prefer, make sure some version of your alphabet is a subset of its values, and then throw out any values that do not match the alphabet you are using.
+        </li>
+      </ul>
+    </li>
+  </ol>
+  <h3> Online Sources of Random Values </h3>
+  <ul>
+    <li> <a href="https://www.grc.com/ppp.htm">https://www.grc.com/ppp.htm</a> </li>
+    <li> <a href="https://www.lastpass.com/password-generator">https://www.lastpass.com/password-generator</a> </li>
+    <li> <a href="https://passwordsgenerator.net">https://passwordsgenerator.net</a> </li>
+    <li> <a href="https://www.random.org/passwords/">https://www.random.org/passwords/</a> </li>
+    <li> <a href="https://www.random.org/bytes/">https://www.random.org/bytes/</a> </li>
+  </ul>
+  <p> It should go without saying, but anything you do on a computer is only as secure as that computer is. You can start with the above, even from an unsecure connection on a public computer, but secure is always preferable. Everything after this should only be done in the most secure environment possible. </p>
+  <ul>
+    <li>
+      Go to <a href="https://abamacus.net/otp/">abamacus.net/otp/</a>. This runs everything client-side; no values are sent to the server.
+      <ul>
+        <li>
+          If you want "perfect" security, download the one-file version, <a href="." download="OneTimePad.html">OneTimePad.html</a>, run it from a computer that is totally offline, and never again let the computer out of site, nor connect it to any network or any other device.
+        </li>
+      </ul>
+    </li>
+    <li> Select/input your alphabet </li>
+    <li> In the "Input" box, enter your initial "random" value </li>
+    <li> In the "Key" box, enter a secondary "random" value, of the same length </li>
+    <li>
+      The "Output" value is now a combined value, that includes the entropy of both the Input and the Key values.
+      So if either is weak at some point where the other is not, that weakness will be removed.
+      Nothing you input can <em>reduce</em> the randomness of the value, only increase it (unless you somehow base your Key value on the current Input value itself; don't do that).
+    </li>
+    <li> Now copy the Output value, and pasted it back into the Input area, and input another Key value. </li>
+    <li> Repeat for all remaining initial random values. </li>
+    <li> Once done, put your last Output back into the Input, and click "Generate Key". This uses the low-quality random number generator in your browser to generate random values from that alphabet, of the same length as the input. The reason to always include this step, is that even if all of your communication to all websites above was fully intercepted, this pseudo-random value could not have been intercepted; and it can't make the Output any <em>less</em> random. </li>
+  </ul>
+  <p>
+    Now the Output value is the most-secure version of all of the input random values combined.
+    Store this value until you need it; and once you use it, destroy it!
+    (if you ever use it again, it ain't "one time")
+  </p>
+
+    <h2> Passwords / Cryptographically Secure Keys, For the Slightly Paranoid </h2>
+    <p> Similar to the above, but instead of trying to get a bunch of "truly random" values from multiple sources, start with one you-generated value (whatever you can come up with quickly), and then use the "Generate Key" button for a few cycles to scramble that. </p>
+    <p>
+      The threat model of random numbers not being cryptographically secure is fairly weak. That is, pseudo randomly generated numbers are only a problem when the attacker knows a lot about your machine.
+      If you really use OneTimePad.html on an offline device, that significantly limits what they can know about it.
+      More importantly, if you use one-time-pad encryption, even if an adversary did correctly guess your pseudo-random numbers, there is absolutely no way for them to <em>prove</em> that they did.
+      And on top of that, if you start with something you make up, and add the random time-delay of your own operation between running "Generate Key" multiple times, that really does guarantee the key will be unguessable.
+      (all browsers I know of implement random() with a seed that includes the current clock time)
+    </p>
+
+  </div>
 
 </body>
 
-<script>
-    function byId(id){
-     return document.getElementById(id);
-    }
-    function encrypt() {
-     var input = byId('uiInput').value;
-     var key = byId('uiKey').value;
-     var alphabet = byId('uiAlphabet').value;
-     var encrypt = byId('uiEncrypt').checked;
-     try {
-      byId('uiOutput').value = cipher(input,key,alphabet,encrypt);
-     } catch (e) {
-      byId('uiOutput').value = e.name + '\n' + e.message;
-     }
-    }
-    function updateInput() {
-     byId('uiInputSize').textContent = byId('uiInput').value.length;
-     encrypt();
-    }
-    function updateKey() {
-     byId('uiKeySize').textContent = byId('uiKey').value.length;
-     encrypt();
-    }
-    function generateKey() {
-
-     function rnd(n){ return Math.floor((Math.random() * n)); }
-     var alphabet = byId('uiAlphabet').value;
-     var inputLength = byId('uiInput').value.length;
-     var keyArray = new Array();
-     for (var i = 0 ; i < inputLength ; ++i ){
-      var r = rnd(alphabet.length);
-      keyArray[i] = alphabet[r];
-     }
-
-     byId('uiKey').value = keyArray.join('');
-     updateKey();
-    }
-    function updateAlphabet() {
-     function onlyUnique(value, index, self) { return self.indexOf(value) === index; }
-     var alphabet = byId('uiAlphabet').value;
-     // keep only distinct values
-     alphabet = alphabet.split('').filter(onlyUnique).join('');
-     if (byId('uiAlphabet').value != alphabet)
-      byId('uiAlphabet').value = alphabet;
-     byId('uiAlphabetSize').textContent = alphabet.length;
-     switch (alphabet) {
-      case ALPHABET_26:
-       byId('uiAlphabetSet').selectedIndex = 0;
-       break;
-      case ALPHABET_96:
-       byId('uiAlphabetSet').selectedIndex = 1;
-       break;
-      case ALPHABET_64:
-       byId('uiAlphabetSet').selectedIndex = 2;
-       break;
-      case ALPHABET_16:
-       byId('uiAlphabetSet').selectedIndex = 3;
-       break;
-      case ALPHABET_10:
-       byId('uiAlphabetSet').selectedIndex = 4;
-       break;
-      default:
-       byId('uiAlphabetSet').selectedIndex = 5;
-       break;
-     }
-    }
-    function sortAlphabet() {
-     var alphabet = byId('uiAlphabet').value;
-     alphabet = alphabet.split('').sort().join('');
-     byId('uiAlphabet').value = alphabet;
-     updateAlphabet();
-    }
-    var ALPHABET_26 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var ALPHABET_96 = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ' + '\n'
-                    + '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}\|;:'
-                    + "'" + '",.<>/?`~	';
-    var ALPHABET_64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    var ALPHABET_16 = '0123456789ABCDEF';
-    var ALPHABET_10 = '0123456789';
-    function getSelectedAlphabet() {
-     var i = byId('uiAlphabetSet').selectedIndex;
-     var options = byId('uiAlphabetSet').getElementsByTagName('option');
-     var selectedOptionValue = options[i].value;
-     switch (selectedOptionValue) {
-      case '26':
-       return ALPHABET_26;
-      case '96':
-       return ALPHABET_96;
-      case '64':
-       return ALPHABET_64;
-      case '16':
-       return ALPHABET_16;
-      case '10':
-       return ALPHABET_10;
-      case '':
-       // whatever the existing value is
-       return byId('uiAlphabet').value;
-      default:
-       return 'Logic error - unexepcted value "' + value + '" in selectAlphabet.';
-     }
-    }
-    function selectAlphabet() {
-     var alphabet = getSelectedAlphabet();
-     byId('uiAlphabet').value = alphabet;
-     byId('uiAlphabetSize').textContent = alphabet.length;
-     encrypt();
-    }
-
-    function saveBlobToFile(fileNameToSaveAs, blob) {
-     var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-         // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
-     var isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
-     var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
-         // At least Safari 3+: "[object HTMLElementConstructor]"
-     var isChrome = !!window.chrome && !isOpera;              // Chrome 1+
-     var isIE = window.navigator.userAgent.match(/MSIE\s([\d.]+)/),
-      ie11 = window.navigator.userAgent.match(/Trident\/7.0/) && navigator.userAgent.match(/rv:11/),
-      //"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; InfoPath.3)"
-      ieVer = (isIE ? isIE[1] : (ie11 ? 11 : -1));
-     if (isIE && ieVer < 10) {
-      window.alert('Cannot save file in Internet Explorer 9 (or earlier)')
-      return;
-     }
-
-     if (isIE || ie11) { // or: if (window.navigator.appName == 'Microsoft Internet Explorer')
-      window.alert('1');
-      window.navigator.msSaveBlob(blob, fileNameToSaveAs);
-     } else {
-      var downloadLink = document.createElement('a');
-      downloadLink.download = fileNameToSaveAs;
-      downloadLink.innerHTML = 'Download File';
-
-      downloadLink.href = window.URL.createObjectURL(blob);
-
-      if (isFirefox) {
-       // Firefox requires the link to be added to the DOM before it can be clicked.
-       // (Chrome allows the link to be clicked without actually adding it to the DOM.)
-       downloadLink.onclick = function destroyClickedElement(event) { document.body.removeChild(event.target); }
-       downloadLink.style.display = 'none';
-       document.body.appendChild(downloadLink);
-      }
-
-      downloadLink.click();
-     }
-    }
-
-    function blobToBase64(value){
-     // using the built-in function (but removing the suffix "pad" characters)
-     return btoa(value).replace(/=/g, '');
-    }
-    function base64ToBlob(b64Data, contentType, sliceSize) {
-     contentType = contentType || '';
-     sliceSize = sliceSize || 512;
-
-     var byteCharacters = atob(b64Data);
-     var byteArrays = [];
-
-     for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      var slice = byteCharacters.slice(offset, offset + sliceSize);
-      var byteNumbers = new Array(slice.length);
-      for (var i = 0; i < slice.length; i++) {
-       byteNumbers[i] = slice.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-     }
-     var blob = new Blob(byteArrays, {type: contentType});
-     return blob;
-    }
-
-    function dumb_readAsBinaryString(file){
-     this.old_onloadend = this.onloadend;
-     function new_onloadend(){
-      var bytes = new Uint8Array(this.result);
-      var binary = '';
-      for (var i = 0; i < bytes.byteLength; i++) {
-       binary += String.fromCharCode(bytes[i]);
-      }
-      // trying to just set "this.result = binary;" doesn't work in IE, no idea why.
-      // so instead, this is a more terrible hack to let the old_onloadend run.
-      //this.result = binary;
-      var o = new Object();
-      o.result = binary;
-      o.target = this.target;
-      o.onloadend = this.old_onloadend;
-      o.onloadend();
-     }
-     this.onloadend = new_onloadend;
-     this.readAsArrayBuffer(file);
-    }
-    if (FileReader.prototype.readAsBinaryString == undefined)
-     FileReader.prototype.readAsBinaryString = dumb_readAsBinaryString;
-    function loadendFileReader () {
-     var fileContents = this.result;
-     if (byId('uiAlphabet').value == ALPHABET_64)
-      fileContents = blobToBase64(fileContents);
-     this.target.value = fileContents;
-    }
-    function uploadInput() {
-     var file = byId('uiInputFile').files[0];
-     var reader = new FileReader();
-     reader.target = byId('uiInput');
-     reader.onloadend = loadendFileReader;
-     reader.readAsBinaryString(file);
-    }
-    function uploadKey() {
-     var file = byId('uiKeyFile').files[0];
-     var reader = new FileReader();
-     reader.target = byId('uiKey');
-     reader.onloadend = loadendFileReader;
-     reader.readAsBinaryString(file);
-    }
-    function downloadOutput() {
-     var filename = (byId('uiEncrypt').checked) ? 'ciphertext.otp' : 'plaintext.txt'
-     if (byId('uiAlphabet').value == ALPHABET_64) {
-      var base64Value = byId('uiOutput').value;
-      var blob = base64ToBlob(base64Value, 'text/plain; charset=x-user-defined');
-      saveBlobToFile(filename, blob);
-     } else {
-      var textToWrite = byId('uiOutput').value;
-      var blob = new Blob([textToWrite], { type: 'text/plain' });
-      saveBlobToFile(filename, blob);
-     }
-    }
-
-    function toArrayOfIndexes(value, alphabet) {
-     var array = value.split('');
-     for (var i = 0 ; i < value.length ; ++i ){
-      var indexValue = alphabet.indexOf(array[i]);
-      if (indexValue == -1)
-       throw new Error('character "' + array[i] + '" was not found in the alphabet.');
-      array[i] = indexValue;
-     }
-     return array;
-    }
-    function fromArrayOfIndexes(array, alphabet) {
-     var tempArray = [];
-     for (var i = 0 ; i < array.length ; ++i ){
-      tempArray[i] = alphabet[array[i]];
-     }
-     return tempArray.join('');
-    }
-    function cipher(input, key, alphabet, encrypt) {
-     // validation
-     if (input.length > key.length)
-      throw new Error('input cannot be shorter than the key for One Time Pad encryption.');
-
-     function onlyUnique(value, index, self) { return self.indexOf(value) === index; }
-     if (alphabet.length != alphabet.split('').filter(onlyUnique).join('').length)
-      throw new Error('alphabet values are not all unique.');
-
-     // use arrays of numbers instead of operating directly on string values
-     var inputArray = toArrayOfIndexes(input, alphabet);
-     var keyArray = toArrayOfIndexes(key, alphabet);
-
-     var outputArray = [];
-     for (var i = 0 ; i < key.length ; ++i ){
-      if (encrypt) // compute the ciphertext version of this value
-       outputArray[i] = (inputArray[i] + keyArray[i]) % alphabet.length;
-      else // compute the plaintext version of this value
-       outputArray[i] = (inputArray[i] + alphabet.length - keyArray[i]) % alphabet.length;
-     }
-
-     return fromArrayOfIndexes(outputArray, alphabet);
-    }
-
-    function dropMethod(e) {
-     e = e || window.event; // get window.event if e argument missing (in IE)
-     if (e.preventDefault) { e.preventDefault(); } // stops the browser from redirecting off to the image.
-     var dt = e.dataTransfer;
-     var files = dt.files;
-     if (files.length > 1) {
-      e.target.value = 'Can only drop one file';
-      return;
-     }
-     var file = files[0];
-     var reader = new FileReader();
-     reader.target = e.target;
-     reader.onloadend = loadendFileReader;
-     reader.readAsBinaryString(file);
-     return false;
-    }
-
-    function initialize() {
-     // add event listeners
-     byId('uiInput').addEventListener('input', updateInput);
-     byId('uiKey').addEventListener('input', updateKey);
-     byId('uiGenerateKey').addEventListener('click', generateKey);
-     byId('uiAlphabet').addEventListener('input', updateAlphabet);
-     byId('uiSortAlphabet').addEventListener('click', sortAlphabet);
-     byId('uiAlphabetSet').addEventListener('change', selectAlphabet);
-     byId('uiUploadInput').addEventListener('click', uploadInput);
-     byId('uiUploadKey').addEventListener('click', uploadKey);
-     byId('uiDownloadOutput').addEventListener('click', downloadOutput);
-     // file drop handling
-     function cancel(e) { if (e.preventDefault) e.preventDefault(); return false; }
-     byId('uiInput').addEventListener('dragover', cancel);
-     byId('uiInput').addEventListener('dragenter', cancel);
-     byId('uiInput').addEventListener('drop', dropMethod);
-     byId('uiKey').addEventListener('dragover', cancel);
-     byId('uiKey').addEventListener('dragenter', cancel);
-     byId('uiKey').addEventListener('drop', dropMethod);
-
-     updateInput();
-     updateKey();
-     byId('uiAlphabetSet').selectedIndex = 1;
-     selectAlphabet();
-     encrypt();
-    }
-    window.addEventListener('load', initialize);
-</script>
 </html>

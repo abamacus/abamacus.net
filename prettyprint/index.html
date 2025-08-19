@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<title>Prettify</title>
+		<!--script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script-->
+		<script src="run_prettify.js"></script>
+		<!--script src="https://github.com/vkiryukhin/vkBeautify/blob/master/vkbeautify.js"></script-->
+		<script src="vkbeautify.js"></script>
+		<script>
+      function byId(id, tagName) { return document.getElementById(id); }
+      function uiImportFile_onchange() {
+        var reader = new FileReader();
+        reader.onloadend = function(evt){
+          if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+            byId('xmlInput').value = this.result; // file contents
+            prettifyInput();
+          }
+        }; 
+        try{
+          var file = byId('uiImportFile').files[0];
+          reader.readAsText(file);
+        }catch(e){
+        }
+        byId('uiImportFile').value = '';
+      }
+      function prettifyInput() {
+        var xmlOutput = byId('xmlOutput');
+        xmlOutput.textContent = byId('xmlInput').value;
+        var c = xmlOutput.textContent;
+        if (c.indexOf('<') == 0) {
+          byId('message').textContent = 'Formatting XML';
+          try{
+            c = vkbeautify.xml(c);
+          } catch(e) {
+            byId('message').textContent = 'Formatting XML - error: ' + e.message;
+            console.log(e);
+          }
+        } else if ((c.indexOf('{') > -1) | (c.indexOf('[') > -1)) {
+          byId('message').textContent = 'Formatting JSON';
+          try{
+            c = vkbeautify.json(c);
+          } catch(e) {
+            // not valid JSON? try CSS
+            byId('message').textContent = 'Formatting CSS';
+            try{
+              c = vkbeautify.css(c);
+            } catch(e) {
+              byId('message').textContent = 'Formatting JSON/CSS - error: ' + e.message;
+              console.log(e);
+            }
+          }
+        } else if (c.toUpperCase().indexOf('SELECT') > -1) {
+          byId('message').textContent = 'Formatting SQL';
+          try{
+            c = vkbeautify.sql(c);
+          } catch(e) {
+            byId('message').textContent = 'Formatting SQL - error: ' + e.message;
+            console.log(e);
+          }
+        } else {
+          byId('message').textContent = 'Input not recognized as XML, JSON, CSS, or SQL';
+        }
+        xmlOutput.textContent = c;
+        xmlOutput.className = 'prettyprint';
+        PR.prettyPrint(xmlOutput);
+      }
+      function output(value) {
+        value + '\n';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        byId('uiPrettify').onclick = prettifyInput;
+        byId('uiImportFile').onchange = uiImportFile_onchange;
+      }, false);	
+    </script>
+  </head>
+  <body>
+    <textarea aria-label="Input" id="xmlInput" rows="10" cols="80"></textarea>
+    <br/>
+    <input id="uiImportFile" type="file" accept=".xml, .html, .config" />
+    <br/>
+    <input id="uiPrettify" type="button" value="Update from Input">
+    <span id="message" style="color: #777;"></span>
+    <pre id="xmlOutput" class="prettyprint" style="border: 1px solid black; white-space:pre-wrap;"></pre>
+  </body>
+</html>

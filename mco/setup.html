@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>Minecraft Setup - the abamacus method</title>
+  <link href="style.css" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="script.js"></script>
+</head>
+
+<body>
+<div id="_sidebar" class="sidebar">
+  <script>addSidebarAsync();</script>
+</div>
+
+<h1> Documenting my journey of setting up Minecraft on Ubuntu (Linux), with (hopefully) useful mods. </h1>
+<p>Writing this for anyone who wants to copy my methods -- which is most likely my future-self, more than anyone else ;)</p>
+
+<h2> Get a PC, install Ubuntu </h2>
+<p> First, get a new PC, that is so cheap it will make Windows painfully slow -- but linux, being actually good, works great on it! </p>
+<p> Grab a blank 16 GB USB flash drive (only needs 6 GB allegedly), and follow this process to make a bootable USB:
+  <br/>https://ubuntu.com/tutorials/create-a-usb-stick-on-ubuntu#1-overview </p>
+<p> Edit your BIOS settings to allow booting from USB. (the above does not require disabling UEFI) </p>
+<p> Install Ubuntu from the disk. Boot into your shiny new linux; mess around a bit.</p>
+<p> Set up your browser, install extensions as needed. </p>
+
+<h2> Install apps </h2>
+
+<p>
+  Open the App Center and install: "IntelliJ IDEA Community Edition" by jetbrains.
+  <br/> Later on, wonder why you used the App Center instead of their own installation guide:
+  <br/> <a href="https://www.jetbrains.com/help/idea/installation-guide.html">https://www.jetbrains.com/help/idea/installation-guide.html</a>
+</p>
+<p> Open the terminal (CTRL+ALT+T) and install a few apps:</p>
+<pre class="code">sudo apt install git gimp autokey-gtk</pre>
+<p>Later learn that AutoKey doesn't work at the moment; be sad and hope for a better solution later</p>
+
+<p> For Minecraft itself, use the official website.</p>
+<ol>
+  <li> Go to: <a href="https://www.minecraft.net/en-us/download">https://www.minecraft.net/en-us/download</a> </li>
+  <li> Download the "DEBIAN + DEBIAN BASED" option. </li>
+</ol>
+<p> Open the terminal again. </p>
+<pre class="code">cd ~/Downloads
+sudo dpkg -i Minecraft.deb</pre>
+
+<h2> Install Mod Loaders </h2>
+
+TODO:
+https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html
+click "Installer" to download the jar file; wait for ad then click SKIP
+You should now have a download like "forge-1.12.2-14.23.5.2860-installer.jar"
+
+https://www.liteloader.com/download
+click 1.12.2 SNAPSHOT
+click Download JAR
+
+sudo apt-get update
+sudo apt --fix-broken install
+sudo apt install openjdk-8-jdk openjdk-8-jre -y
+cd ~/Downloads
+java -jar forge-1.12.2-14.23.5.2860-installer.jar nogui
+click "Install Client"; when get Complete message click OK
+java -jar liteloader-installer-1.12.2-00-SNAPSHOT.jar nogui
+in "Extend from" select the new forge installation, click OK.
+
+<h2> Download / Install Mods </h2>
+<pre>
+AntiGhost (antighost-1.12-forge14.21.1.2387-1.1.1.jar) - less re-logging for those who like to instant-mine.
+https://www.curseforge.com/minecraft/mc-mods/antighost/files/2856128
+
+Xaeros Map (XaerosWorldMap_1.39.12_Forge_1.12.jar, Xaeros_Minimap_FP22.2.0.1_Forge_1.12.jar) - both world-map and mini-map ("fair play") mods.
+https://www.curseforge.com/minecraft/mc-mods/xaeros-world-map
+https://www.curseforge.com/minecraft/mc-mods/xaeros-minimap-fair-play-edition
+
+OptiFine (OptiFine_1.12.2_HD_U_G5.jar) - required to see custom MCO textures.
+https://optifine.net/downloads
+
+ColorUtility (ColorUtility-universal-1.0.4.jar) - write formatted text on signs and books.
+https://www.curseforge.com/minecraft/mc-mods/colorutility/files/2440182
+
+Litematica (litematica-forge-1.12.2-0.0.0-dev.20191217.195055.jar, malilib-forge-1.12.2-0.10.0-dev.23.jar) - for saving builds made in Creative, and helping build them in MCO. Saves *lots* of time on large projects.
+https://modrinth.com/mod/malilib
+https://modrinth.com/mod/litematica/version/0.0.0-dev.20191217.195055
+
+WorldEdit (worldedit-forge-mc1.12.2-6.1.10-dist.jar, WorldEdit-CUI-FE3-1.12.2-3.0.9.jar) - "In-game Minecraft map editor"
+https://www.curseforge.com/minecraft/mc-mods/worldedit/files/6693952
+
+move all jar files to:
+~/.minecraft/mods/1.12.2
+
+TODO
+Ghostwriter (1.12.2-Ghostwriter-1.9.8.jar) - "Utility for dealing with books (backup, restore, copy, paste, etc.)"
+https://openeye.openmods.info/mod/ghostwriter
+https://github.com/waffle-stomper/Ghostwriter
+Named Heads (namedheads-0.2.0+1.12.2.jar) - shows the player-name of a placed player-head block, similar to renamed item in an item frame.
+https://github.com/14mRh4X0r/namedheads
+
+dependencies -- some of the above might need these?
+LunatriusCore-1.12.2-1.2.0.42-universal.jar
+liteloader-installer-1.12.2-00-SNAPSHOT.jar
+</pre>
+<p>TODO: make your own mod?</p>
+<p>TODO: get a form of macros working (own mod is best)</p>
+<p>TODO: install Craftbook, from source code, get working on my machine</p>
+<p>TODO: run separate PC as Minecraft server; i.e. do much of the above again, with just minecraft no personal/user data</p>
+</body>
+</html>

@@ -1,11 +1,15 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
-
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
   <title>Minecraft Setup - the abamacus method</title>
   <link href="style.css" rel="stylesheet" type="text/css"/>
   <script type="text/javascript" src="script.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/favicon.png"/>
 </head>
 
 <body>
@@ -14,10 +18,12 @@
 </div>
 
 <h1> Documenting my journey of setting up Minecraft on Ubuntu (Linux), with (hopefully) useful mods. </h1>
-<p>Writing this for anyone who wants to copy my methods -- which is most likely my future-self, more than anyone else ;)</p>
+<p>Writing this for anyone who wants to copy my methods -- which is most likely my future-self, more than anyone else
+  ;)</p>
 
 <h2> Get a PC, install Ubuntu </h2>
-<p> First, get a new PC, that is so cheap it will make Windows painfully slow -- but linux, being actually good, works great on it! </p>
+<p> First, get a new PC, that is so cheap it will make Windows painfully slow -- but linux, being actually good, works
+  great on it! </p>
 <p> Grab a blank 16 GB USB flash drive (only needs 6 GB allegedly), and follow this process to make a bootable USB:
   <br/>https://ubuntu.com/tutorials/create-a-usb-stick-on-ubuntu#1-overview </p>
 <p> Edit your BIOS settings to allow booting from USB. (the above does not require disabling UEFI) </p>
@@ -26,83 +32,225 @@
 
 <h2> Install apps </h2>
 
+<h3> IntelliJ </h3>
 <p>
   Open the App Center and install: "IntelliJ IDEA Community Edition" by jetbrains.
   <br/> Later on, wonder why you used the App Center instead of their own installation guide:
   <br/> <a href="https://www.jetbrains.com/help/idea/installation-guide.html">https://www.jetbrains.com/help/idea/installation-guide.html</a>
 </p>
+<h3> git, gimp, auotkey </h3>
 <p> Open the terminal (CTRL+ALT+T) and install a few apps:</p>
-<pre class="code">sudo apt install git gimp autokey-gtk</pre>
-<p>Later learn that AutoKey doesn't work at the moment; be sad and hope for a better solution later</p>
+<pre class="code">
+  ~$ sudo apt install git gimp autokey-gtk
+</pre>
+<p>(later learn that AutoKey doesn't work at the moment; be sad and hope for a better solution later)</p>
 
+<h3> Minecraft </h3>
 <p> For Minecraft itself, use the official website.</p>
 <ol>
-  <li> Go to: <a href="https://www.minecraft.net/en-us/download">https://www.minecraft.net/en-us/download</a> </li>
-  <li> Download the "DEBIAN + DEBIAN BASED" option. </li>
+  <li> Go to: <a href="https://www.minecraft.net/en-us/download">https://www.minecraft.net/en-us/download</a></li>
+  <li> Download the "DEBIAN + DEBIAN BASED" option.</li>
 </ol>
 <p> Open the terminal again. </p>
-<pre class="code">cd ~/Downloads
-sudo dpkg -i Minecraft.deb</pre>
+<pre class="code">
+~$ cd ~/Downloads
+~/Downloads$ sudo dpkg -i Minecraft.deb
+</pre>
 
 <h2> Install Mod Loaders </h2>
 
-TODO:
-https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html
-click "Installer" to download the jar file; wait for ad then click SKIP
-You should now have a download like "forge-1.12.2-14.23.5.2860-installer.jar"
-
-https://www.liteloader.com/download
-click 1.12.2 SNAPSHOT
-click Download JAR
-
+<p> First download Forge and LiteLoader: </p>
+<ol>
+  <li> Open <a href="https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html">https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html</a> </li>
+  <li> click "Installer" to download the jar file; wait for ad then click SKIP </li>
+  <li> Open <a href="https://www.liteloader.com/download">https://www.liteloader.com/download</a> </li>
+  <li> click 1.12.2 SNAPSHOT </li>
+  <li> click Download JAR </li>
+  <li> You should now have two files in your ~/Download folder, similar to:
+    <ul>
+      <li>forge-1.12.2-14.23.5.2860-installer.jar</li>
+      <li>liteloader-installer-1.12.2-00-SNAPSHOT.jar</li>
+    </ul>
+    You will need the exact names next. </li>
+  <li> Open the terminal again, and run the following commands. Ensure you have the exact jar file names from the downloads.
+    <pre class="code">
 sudo apt-get update
 sudo apt --fix-broken install
 sudo apt install openjdk-8-jdk openjdk-8-jre -y
 cd ~/Downloads
-java -jar forge-1.12.2-14.23.5.2860-installer.jar nogui
-click "Install Client"; when get Complete message click OK
-java -jar liteloader-installer-1.12.2-00-SNAPSHOT.jar nogui
-in "Extend from" select the new forge installation, click OK.
+java -jar forge-1.12.2-14.23.5.2860-installer.jar nogui</pre></li>
+  <li> click "Install Client"; when get Complete message click OK </li>
+  <li> Back in the terminal
+    <pre class="code">java -jar liteloader-installer-1.12.2-00-SNAPSHOT.jar nogui</pre></li>
+  <li> in "Extend from" select the new forge installation, click OK. </li>
+</ol>
 
 <h2> Download / Install Mods </h2>
+
+<table>
+  <tr>
+    <th>Mod</th>
+    <th>Source</th>
+    <th>File Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td> AntiGhost </td>
+    <td> <a href="https://www.curseforge.com/minecraft/mc-mods/antighost/files/2856128">CurseForge</a> </td>
+    <td> antighost-1.12-forge14.21.1.2387-1.1.1.jar </td>
+    <td> Fix ghost blocks with a key-press, so you can spend less time re-logging. </td>
+  </tr>
+  <tr>
+    <td> Xaeros World Map </td>
+    <td> <a href="https://www.curseforge.com/minecraft/mc-mods/xaeros-world-map">CurseForge</a> </td>
+    <td> XaerosWorldMap_1.39.12_Forge_1.12.jar </td>
+    <td> Good world-map mod. </td>
+  </tr>
+  <tr>
+    <td> Xaeros Minimap </td>
+    <td> <a href="https://www.curseforge.com/minecraft/mc-mods/xaeros-minimap-fair-play-edition">CurseForge</a> </td>
+    <td> Xaeros_Minimap_FP22.2.0.1_Forge_1.12.jar </td>
+    <td> Good mini-map mod. This version is MCO-safe by default, by not showing any entities or caves. </td>
+  </tr>
+  <tr>
+    <td> OptiFine </td>
+    <td> <a href="https://optifine.net/downloads">optifine.net</a> </td>
+    <td> OptiFine_1.12.2_HD_U_G5.jar </td>
+    <td> Improves FPS (render time), gives good options; this is also required to see custom MCO textures. </td>
+  </tr>
+  <tr>
+    <td> ColorUtility </td>
+    <td> <a href="https://www.curseforge.com/minecraft/mc-mods/colorutility/files/2440182">CurseForge</a> </td>
+    <td> ColorUtility-universal-1.0.4.jar </td>
+    <td> Write formatted text on signs and books. </td>
+  </tr>
+  <tr>
+    <td> MaLiLib </td>
+    <td> <a href="https://modrinth.com/mod/malilib">modrinth.com</a> </td>
+    <td> malilib-forge-1.12.2-0.10.0-dev.23.jar </td>
+    <td> Required by Litematica. </td>
+  </tr>
+  <tr>
+    <td> Litematica </td>
+    <td> <a href="https://modrinth.com/mod/litematica/version/0.0.0-dev.20191217.195055">modrinth.com</a> </td>
+    <td> litematica-forge-1.12.2-0.0.0-dev.20191217.195055.jar </td>
+    <td> For saving builds made in Creative, and helping build them in MCO. Saves *lots* of time on large projects. </td>
+  </tr>
+  <tr>
+    <td> WorldEdit </td>
+    <td> <a href="https://www.curseforge.com/minecraft/mc-mods/worldedit/files/6693952">CurseForge</a> </td>
+    <td> worldedit-forge-mc1.12.2-6.1.10-dist.jar </td>
+    <td> In-game Minecraft map editor. For designing builds in Creative, to then use with Litematica. </td>
+  </tr>
+  <tr>
+    <td> Ghostwriter </td>
+    <td> <a href="https://github.com/waffle-stomper/Ghostwriter/releases/tag/1.12.2-1.9.8">github</a> </td>
+    <td> 1.12.2-Ghostwriter-1.9.8.jar </td>
+    <td> Utility for dealing with books (backup, restore, copy, paste, etc.) </td>
+  </tr>
+  <tr>
+    <td> Named Heads </td>
+    <td> <a href="https://github.com/14mRh4X0r/namedheads/releases">CurseForge</a> </td>
+    <td> namedheads-0.2.0+1.12.2.jar </td>
+    <td> Shows the player-name of a placed player-head block, similar to renamed item in an item frame. </td>
+  </tr>
+</table>
+
+<p> After downloading all mods, move all those jar files from your ~/Downloads folder to:</p>
+<ul>
+  <li> ~/.minecraft/mods/1.12.2 </li>
+</ul>
+
+<h2> Configure Minecraft &amp; Mods </h2>
+<p>First correct the many bad defaults in vanilla Minecraft 1.12.2.</p>
+<ul class="scrunch">
+  <li> FOV: 90 </li>
+  <li> Realms Notifications: OFF </li>
+  <li> Music & Sounds...
+    <ul>
+      <li> Show Subtitles: ON </li>
+      <li> (leave sound levels; mute in the operating system not in settings) </li>
+    </ul>
+  </li>
+  <li> Video Settings...
+    <ul>
+      <li> Graphics: Fast </li>
+      <li> Render Distance: 12 </li>
+      <li> Smooth Lighting: Minimum </li>
+      <li> Smooth Lighting Level: OFF </li>
+      <li> View Bobbing: OFF </li>
+      <li> GUI Scale: Normal </li>
+      <li> Brightness: either +50% or Bright </li>
+      <li> Dynamic Lights: Fast </li>
+      <li> Animations...
+        <ul>
+          <li> Particles: Decreased </li>
+        </ul>
+      </li>
+      <li> Other...
+        <ul>
+          <li> Advanced Tooltips: ON </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li> Controls...
+    <ul>
+      <li> Auto-Jump: OFF </li>
+      <li> Pick Block: V </li>
+      <li> Xaero's World Map > Open World Map: SHIFT + M (to avoid conflict with Litematica's "M") </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Then from the root menu, click <strong>Mods</strong>, click <strong>Config</strong>:</p>
+<ul class="scrunch">
+  <li> Litematica...
+    <ul>
+      <li> TODO </li>
+    </ul>
+  </li>
+  <li> Xaero's Minimap
+    <ul>
+      <li> View Settings...
+        <ul>
+          <li> Size: 180 </li>
+          <li> Lock Minimap North: ON </li>
+          <li> Zoom: 1.0x </li>
+          <li> Cave Mode Zoom In: OFF </li>
+          <li> Frame Style: OFF </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li> Xaero's World Map
+    <ul>
+      <li> Block Colours: Vanilla </li>
+      <li> Biome Blending: OFF </li>
+      <li> Biomes In Vanilla Mode: ON </li>
+    </ul>
+  </li>
+</ul>
 <pre>
-AntiGhost (antighost-1.12-forge14.21.1.2387-1.1.1.jar) - less re-logging for those who like to instant-mine.
-https://www.curseforge.com/minecraft/mc-mods/antighost/files/2856128
 
-Xaeros Map (XaerosWorldMap_1.39.12_Forge_1.12.jar, Xaeros_Minimap_FP22.2.0.1_Forge_1.12.jar) - both world-map and mini-map ("fair play") mods.
-https://www.curseforge.com/minecraft/mc-mods/xaeros-world-map
-https://www.curseforge.com/minecraft/mc-mods/xaeros-minimap-fair-play-edition
-
-OptiFine (OptiFine_1.12.2_HD_U_G5.jar) - required to see custom MCO textures.
-https://optifine.net/downloads
-
-ColorUtility (ColorUtility-universal-1.0.4.jar) - write formatted text on signs and books.
-https://www.curseforge.com/minecraft/mc-mods/colorutility/files/2440182
-
-Litematica (litematica-forge-1.12.2-0.0.0-dev.20191217.195055.jar, malilib-forge-1.12.2-0.10.0-dev.23.jar) - for saving builds made in Creative, and helping build them in MCO. Saves *lots* of time on large projects.
-https://modrinth.com/mod/malilib
-https://modrinth.com/mod/litematica/version/0.0.0-dev.20191217.195055
-
-WorldEdit (worldedit-forge-mc1.12.2-6.1.10-dist.jar, WorldEdit-CUI-FE3-1.12.2-3.0.9.jar) - "In-game Minecraft map editor"
-https://www.curseforge.com/minecraft/mc-mods/worldedit/files/6693952
-
-move all jar files to:
-~/.minecraft/mods/1.12.2
-
-TODO
-Ghostwriter (1.12.2-Ghostwriter-1.9.8.jar) - "Utility for dealing with books (backup, restore, copy, paste, etc.)"
-https://openeye.openmods.info/mod/ghostwriter
-https://github.com/waffle-stomper/Ghostwriter
-Named Heads (namedheads-0.2.0+1.12.2.jar) - shows the player-name of a placed player-head block, similar to renamed item in an item frame.
-https://github.com/14mRh4X0r/namedheads
-
-dependencies -- some of the above might need these?
-LunatriusCore-1.12.2-1.2.0.42-universal.jar
-liteloader-installer-1.12.2-00-SNAPSHOT.jar
+Add the MCO resource pack
+<a href="https://minecraftonline.com/resources/MinecraftOnlinePack.zip">https://minecraftonline.com/resources/MinecraftOnlinePack.zip</a>
+todo: add abamacus pack
+  
 </pre>
-<p>TODO: make your own mod?</p>
-<p>TODO: get a form of macros working (own mod is best)</p>
+
+<h2> abamacus mod </h2>
+<p>TODO: make your own mod</p>
+
+<h2> Macros </h2>
+<p>TODO: get a form of macros working; or add good macro support to the abamacus mod</p>
+
+<h2> Self-hosted Craftbook </h2>
 <p>TODO: install Craftbook, from source code, get working on my machine</p>
-<p>TODO: run separate PC as Minecraft server; i.e. do much of the above again, with just minecraft no personal/user data</p>
+
+<h2> Craftbook Test Server </h2>
+<p>TODO: run separate PC as Minecraft server; i.e. do much of the above again, with just minecraft no personal/user
+  data</p>
+
 </body>
 </html>

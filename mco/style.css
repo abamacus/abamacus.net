@@ -51,6 +51,7 @@ pre
 }
 /* RESET END */
 
+/* tooltip */
 .tooltip { position: relative; }
 .tooltip:hover:after
 {
@@ -74,16 +75,13 @@ pre
   border-radius: 5px;
 }
 
-body
-{
-    background: #EEE; /* should always be overrode below (unless user doesn't use the server alias) */
-    font-size: 1em;
-    font-family: "Verdana", "Lucida Grande", "Helvetica Neue", Arial, Helvetica, sans-serif;
-    /* margin: 0px; */
-    padding: 0px;
-    color: #1f1f1f;
+/* main page background and margin */
+body {
+  background: #171717;
+  margin: 2em;
+  padding: 0px;
 }
-body { background: #D0F7F0; }
+
 /* colors for links based mostly on wikipedia's default styling */
 a:link    { color: #3070FF; text-decoration: none; }
 a:visited { color: #5773bF; }
@@ -106,6 +104,33 @@ div, ul, ol, li, h1, h2, h3, h4, h5, h6, p, blockquote
   margin: 0.5em 5px;
 }
 
+ul.scrunch, ul.scrunch ul, ul.scrunch ol, ul.scrunch li,
+ol.scrunch, ol.scrunch ul, ol.scrunch ol, ol.scrunch li
+{
+  margin: 0.2em 5px;
+}
+
+/* font families, colors:
+Headings: blue, with a space-age font
+Normal text: bluish-white, with a clean legible font
+Quote/preformatted: off-white, monospace
+Input text: do not override color or font
+*/
+h1, h2, h3, h4, h5, h6
+{ color: #373fff; font-family: "Bree Serif", serif; }
+body, div, dl, dt, dd, ul, ol, li, form, fieldset, p, th, td
+{ color: #cfcfff; font-family: "Roboto Slab", sans-serif; }
+blockquote, pre
+{ color: #eeeeee; font-family: "Roboto Mono", monospace; }
+input, textarea
+{ }
+
+table, th, td {
+  border: 1px solid #999;
+  padding: 0.1em 0.3em;
+}
+
+h1, dt { font-weight: 600; }
 .code
 {
   display: block;
@@ -115,4 +140,5 @@ div, ul, ol, li, h1, h2, h3, h4, h5, h6, p, blockquote
   background: #111;
   padding: 5px 5px;
   max-width: 40em;
+  border: 2px solid #777;
 }
